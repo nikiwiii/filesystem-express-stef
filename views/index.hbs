@@ -1,0 +1,33 @@
+
+<div class="body">
+    <div class="left">
+        <button id="addfolder">Nowy folder</button>
+        <button id="addfile">Nowy plik tekstowy</button>
+        <button id="upload">wybierz</button>
+    </div>
+    <div class="right"></div>
+</div>
+
+<dialog>
+    <form action="/newfolder" method="post">
+        <p id="dialogtext"></p>
+        <input type="text" name="name">
+        <button type="submit">OK</button>
+        <button formmethod="dialog" value="cancel">cancel</button>
+    </form>
+</dialog>
+
+<script>
+    const dialog = document.querySelector('dialog')
+    const btn1 = document.querySelector('#addfolder')
+    const btn2 = document.querySelector('#addfile')
+
+    btn1.addEventListener('click', () => {
+        document.querySelector('#dialogtext').innerHTML = 'nazwa nowego folderu:'
+        dialog.showModal();
+    });
+    btn2.addEventListener('click', () => {
+        document.querySelector('#dialogtext').innerHTML = 'nazwa nowego pliku:'
+        dialog.showModal();
+    });
+</script>
