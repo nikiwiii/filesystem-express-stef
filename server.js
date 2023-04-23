@@ -20,19 +20,12 @@ app.engine('hbs', hbs.engine({
 //     console.log("czas 1: " + new Date().getMilliseconds());
 // })
 
-
-app.get("/", (req, res) => {
-    res.render('index.hbs', {
-        files: segregate()
-    })
-})
-
 const segregate = () => {
     var tab = fs.readdirSync('./upload/')
     var folders = []
     var files = []
     tab.forEach(e => {
-        if (fs.lstatSync('./upload/'+e).isDirectory()) {
+        if (fs.lstatSync('./upload/' + e).isDirectory()) {
             folders.push({name: e, type: true})
         }
         else {
@@ -42,6 +35,12 @@ const segregate = () => {
     console.log(folders,files);
     return [folders,files]
 }
+
+app.get("/", (req, res) => {
+    res.render('index.hbs', {
+        files: segregate()
+    })
+})
 
 app.use(express.urlencoded({
     extended: true
@@ -56,7 +55,7 @@ app.post('/newfolder', (req, res) => {
         })
     }
     else {
-        fs.mkdir("./upload/" + req.body.name + '_kopia_' + Date.now, (err) => {
+        fs.mkdir("./upload/" + req.body.name + '_kopia_' + new Date().valueOf(), (err) => {
             if (err) throw err
             console.log("jest");
         })
@@ -74,7 +73,7 @@ app.post('/newfile', (req, res) => {
         })
     }
     else {
-        fs.appendFile("./upload/" + req.body.name + '_kopia_' + Date.now, '', (err) => {
+        fs.appendFile("./upload/" + req.body.name + '_kopia_' + new Date().valueOf(), '', (err) => {
             if (err) throw err
             console.log("jest");
         })
@@ -84,6 +83,26 @@ app.post('/newfile', (req, res) => {
     })
 })
 
+app.get('/folder&name=:name', (req, res) => {
+    const name = req.params.name
+    fs.rmdir('./upload/' + name, (err) => {
+        if (err) throw err
+        console.log("jest");
+    })
+    res.render('index.hbs', {
+        files: segregate()
+    })
+})
+app.get('/file&name=:name', (req, res) => {
+    const name = req.params.name
+    fs.unlink('./upload/' + name, (err) => {
+        if (err) throw err
+        console.log("jest");
+    })
+    res.render('index.hbs', {
+        files: segregate()
+    })
+})
 
 app.listen(port, () => {
     console.log(`Server listening on port: ${port}`)
