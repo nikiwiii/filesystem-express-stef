@@ -2,7 +2,8 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: 'Josefin Sans'
+    font-family: 'Josefin Sans';
+    transition: .3s;
 }
 body {height: 100%}
 .top {
@@ -45,7 +46,7 @@ button {
     padding: 20px 0 0 20px;
     margin: 0 0 20px 20px;
     border-radius: 5px;
-    background: radial-gradient(rgb(5, 73, 136) 0%, #0077B6 35%, #03045E 100%);
+    background: linear-gradient(0deg, #022441 35%, #0077B6 100%);
 }
 .file:hover,.folder:hover, button:hover {
     filter: brightness(110%);
@@ -56,7 +57,7 @@ button {
     padding-right: 20px;
 }
 .folder {
-    background: radial-gradient(#03045E 0%, rgba(9,9,121,1) 35%, rgb(0, 89, 255) 100%);
+    background: linear-gradient(0deg, #03045E 0%, rgba(9,9,121,1) 35%, rgb(0, 89, 255) 100%);
 }
 dialog {
     position: absolute;
@@ -96,5 +97,15 @@ input[type="text"] {
     height: 10px;
     color: white;
     padding: 0;
+    align-self: flex-end;
+    background: black;
+    cursor: pointer;
+}
+.file h1, .folder h1 {
+    mix-blend-mode: lighten;
 }
 #files, #folders {display:flex;flex-wrap:wrap}
+input[type="file"] {
+    background-color: rgba(0, 0, 0, .1);
+    border-radius: 5px 5px 0 0;
+}

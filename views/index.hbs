@@ -3,7 +3,10 @@
     <div class="left">
         <button id="addfolder">Nowy folder</button>
         <button id="addfile">Nowy plik tekstowy</button>
-        <button id="upload">wybierz</button>
+        <form action="/uploadf" method="post" class="right" style="padding: 0" id="uploadform">
+            <input type="file" name="filefold" id="file-upload">
+            <button id="upload" style="border-radius: 0 0 5px 5px;" type="button">wybierz</button>
+        </form>
     </div>
     <div class="right">
         {{#each files}}
@@ -37,10 +40,10 @@
 <dialog>
     <form action="/newfolder" method="post" id="new">
         <p id="dialogtext"></p>
-        <input type="text" name="name">
+        <input type="text" name="name" pattern='^[^<>:&#147\/\\|?*\x00-\x1F]+[^ .\\\/&#147]$' required>
         <div>
             <button type="submit">OK</button>
-            <button formmethod="dialog" value="cancel">cancel</button>
+            <button id="cancel" type="cancel">cancel</button>
         </div>
     </form>
 </dialog>
@@ -52,7 +55,19 @@
     const btn2 = document.querySelector('#addfile')
     const delfold = document.querySelector('#folder')
     const delfile = document.querySelector('#files')
+    const cancelBtn = document.querySelector('#cancel')
+    const upload = document.querySelector('#upload')
+    const uploadform = document.querySelector('#uploadform')
 
+    upload.addEventListener('click', () => {
+        if(document.querySelector('#file-upload').value != ''){
+            upload.type='submit'
+            uploadform.submit()
+        }
+    });
+    cancelBtn.addEventListener('click', () => {
+        dialog.close()
+    });
     btn1.addEventListener('click', () => {
         document.querySelector('#dialogtext').innerHTML = 'nazwa nowego folderu:'
         dialog.showModal();

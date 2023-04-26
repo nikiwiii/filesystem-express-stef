@@ -5,7 +5,6 @@ const path = require("path")
 const app = express()
 const port = 4000
 
-
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'hbs')
 app.engine('hbs', hbs.engine({
@@ -13,27 +12,24 @@ app.engine('hbs', hbs.engine({
     helpers: {}
 }));
 
-
-
-// fs.unlink(filepath,  (err) =>{
-//     if (err) throw err
-//     console.log("czas 1: " + new Date().getMilliseconds());
-// })
-
 const segregate = () => {
-    var tab = fs.readdirSync('./upload/')
     var folders = []
     var files = []
+    var tab = fs.readdirSync('./upload/')
     tab.forEach(e => {
         if (fs.lstatSync('./upload/' + e).isDirectory()) {
-            folders.push({name: e, type: true})
-        }
-        else {
-            files.push({name: e, type: false})
+            folders.push({
+                name: e,
+                type: true
+            })
+        } else {
+            files.push({
+                name: e,
+                type: false
+            })
         }
     });
-    console.log(folders,files);
-    return [folders,files]
+    return [folders, files]
 }
 
 app.get("/", (req, res) => {
@@ -53,8 +49,7 @@ app.post('/newfolder', (req, res) => {
             if (err) throw err
             console.log("jest");
         })
-    }
-    else {
+    } else {
         fs.mkdir("./upload/" + req.body.name + '_kopia_' + new Date().valueOf(), (err) => {
             if (err) throw err
             console.log("jest");
@@ -71,8 +66,7 @@ app.post('/newfile', (req, res) => {
             if (err) throw err
             console.log("jest");
         })
-    }
-    else {
+    } else {
         fs.appendFile("./upload/" + req.body.name + '_kopia_' + new Date().valueOf(), '', (err) => {
             if (err) throw err
             console.log("jest");
@@ -85,20 +79,35 @@ app.post('/newfile', (req, res) => {
 
 app.get('/folder&name=:name', (req, res) => {
     const name = req.params.name
-    fs.rmdir('./upload/' + name, (err) => {
-        if (err) throw err
-        console.log("jest");
-    })
+    if (fs.existsSync("./upload/" + name)) {
+        fs.rmdir('./upload/' + name)
+    }
     res.render('index.hbs', {
         files: segregate()
     })
 })
 app.get('/file&name=:name', (req, res) => {
     const name = req.params.name
-    fs.unlink('./upload/' + name, (err) => {
-        if (err) throw err
-        console.log("jest");
+    if (fs.existsSync("./upload/" + name)) {
+        fs.unlink('./upload/' + name)
+    }
+    res.render('index.hbs', {
+        files: segregate()
     })
+})
+
+app.post('/uploadf', (req, res) => {
+    if (!fs.existsSync("./upload/" + req.body.filefold)) {
+        fs.appendFile("./upload/" + req.body.filefold, '', (err) => {
+            if (err) throw err
+            console.log("jest");
+        })
+    } else {
+        fs.appendFile("./upload/" + req.body.filefold + '_kopia_' + new Date().valueOf(), '', (err) => {
+            if (err) throw err
+            console.log("jest");
+        })
+    }
     res.render('index.hbs', {
         files: segregate()
     })
