@@ -30,6 +30,7 @@ const segregate = () => {
         name: e.substr(0, e.indexOf('.')),
         format: e.substr(e.indexOf('.'), e.length),
         type: false,
+        fullname: e
       });
     }
   });
