@@ -1,34 +1,39 @@
-
 <div class="body">
     <div class="left">
         <button id="addfolder">Nowy folder</button>
         <button id="addfile">Nowy plik tekstowy</button>
-        <form action="/uploadf" method="post" class="right" style="padding: 0" id="uploadform">
+        <form action="/uploadf" method="post" class="right" style="padding: 0;background: transparent" id="uploadform">
             <input type="file" name="filefold" id="file-upload">
             <button id="upload" style="border-radius: 0 0 5px 5px;" type="button">wybierz</button>
         </form>
     </div>
-    <div class="right">
+    <div class="right" style="overflow-y: scroll">
         {{#each files}}
-            <form method="get" id="folders">
+            <form method="get" id="folders" onsubmit="return logdelete(this)">
             {{#each this}}
                 {{#if this.type}}
                 <div class="folder">
-                    <h1>📁</h1>
+                    <div class="flex-max">
+                        <h1>📁</h1>
+                        <button formaction="/folder&name={{this.name}}">X</button>
+                    </div>
                     <p>{{this.name}}</p>
-                    <button formaction="/folder&name={{this.name}}">X</p>
                 </div>
                 {{/if}}
             {{/each}}
             </form>
-            <form method="get" id="files">
+            <form method="get" id="files" onsubmit="return logdelete(this)">
                 {{#each this}}
                     {{#if this.type}}
                     {{else}}
                     <div class="file">
-                        <h1>📝</h1>
-                        <p>{{this.name}}</p>
-                        <button formaction="/file&name={{this.name}}">X</p>
+                        <div class="flex-max">
+                            <h1>📝</h1>
+                            <button formaction="/file&name={{this.name}}">X</button>
+                        </div>
+                        <div style="display: flex">
+                            <p>{{this.name}}</p><p style="position: relative;left: -5px;">{{this.format}}</p>
+                        </div>
                     </div>
                     {{/if}}
                 {{/each}}
@@ -47,42 +52,3 @@
         </div>
     </form>
 </dialog>
-
-<script>
-    const dialog = document.querySelector('dialog')
-    const form = document.querySelector('#new')
-    const btn1 = document.querySelector('#addfolder')
-    const btn2 = document.querySelector('#addfile')
-    const delfold = document.querySelector('#folder')
-    const delfile = document.querySelector('#files')
-    const cancelBtn = document.querySelector('#cancel')
-    const upload = document.querySelector('#upload')
-    const uploadform = document.querySelector('#uploadform')
-
-    upload.addEventListener('click', () => {
-        if(document.querySelector('#file-upload').value != ''){
-            upload.type='submit'
-            uploadform.submit()
-        }
-    });
-    cancelBtn.addEventListener('click', () => {
-        dialog.close()
-    });
-    btn1.addEventListener('click', () => {
-        document.querySelector('#dialogtext').innerHTML = 'nazwa nowego folderu:'
-        dialog.showModal();
-    });
-    btn2.addEventListener('click', () => {
-        form.action = '/newfile'
-        document.querySelector('#dialogtext').innerHTML = 'nazwa nowego pliku:'
-        dialog.showModal();
-    });
-    function logfolddelete(event) {
-        confirm("Sure?") ? form.submit() : null
-    }
-    function logfiledelete(event) {
-        confirm("Sure?") ? form.submit() : null
-    }
-    delfold.addEventListener('submit', logfolddelete)
-    delfile.addEventListener('submit', logfiledelete)
-</script>

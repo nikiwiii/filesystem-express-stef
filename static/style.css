@@ -1,111 +1,150 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
 * {
-    margin: 0;
-    padding: 0;
-    font-family: 'Josefin Sans';
-    transition: .3s;
+  margin: 0;
+  padding: 0;
+  font-family: 'Josefin Sans';
+  transition: 0.3s;
 }
-body {height: 100%}
+body {
+  height: 100%;
+}
 .top {
-    height: 100px;
-    background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
-    display: flex;
-    align-items: center;
-    padding-left: 40px;
+  height: 100px;
+  background: rgb(2, 0, 36);
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
 }
 .body {
-    display: flex;
+  display: flex;
 }
 .left {
-    width: 20%;
-    height: 84.6vh;
-    padding: 20px;
-    background-color: gainsboro;
-    display: flex;
-    flex-direction: column;
+  width: 20%;
+  height: 81.6vh;
+  padding: 20px;
+  background: rgb(2, 0, 36);
+  display: flex;
+  flex-direction: column;
+}
+.left * {
+  border: 0.5px solid white;
+}
+.left #uploadform {
+  border: none !important;
+}
+.right,
+.left {
+  height: 87.2vh;
 }
 .right {
-    padding-top: 20px;
-    display: flex;
-    flex-direction: column;
+  width: 100%;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    90deg,
+    rgb(44, 0, 75) 0%,
+    rgb(104, 0, 104) 60%,
+    rgb(255, 0, 140) 100%
+  );
 }
 button {
-    border: 0;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    padding: 25px 10px;
-    color: white;
-    background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgb(0, 89, 255) 100%);
+  border: 0;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  padding: 15px;
+  color: white;
+  background: rgb(2, 0, 36);
 }
-.file,.folder {
-    user-select: none;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0 0 20px;
-    margin: 0 0 20px 20px;
-    border-radius: 5px;
-    background: linear-gradient(0deg, #022441 35%, #0077B6 100%);
+.file,
+.folder {
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 20px 20px;
+  padding-bottom: 2px;
+  border-radius: 5px;
+  background: white;
 }
-.file:hover,.folder:hover, button:hover {
-    filter: brightness(110%);
+.file:hover,
+.folder:hover,
+button:hover {
+  filter: brightness(110%);
 }
-.file p, .folder p {
-    color: white;
-    font-size: 30px;
-    padding-right: 20px;
+.file p,
+.folder p {
+  user-select: none;
+  color: indigo;
+  font-size: 18px;
+  padding: 3px 3px 0 3px;
+}
+.file div p:first-of-type,
+.folder p:first-of-type {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .folder {
-    background: linear-gradient(0deg, #03045E 0%, rgba(9,9,121,1) 35%, rgb(0, 89, 255) 100%);
+  background-color: gainsboro
 }
 dialog {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateY(-50%) translateX(-50%);
-    width: 300px;
-    height: 200px;
-    border: 0;
-    border-radius: 10px;
-    box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.247);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  width: 300px;
+  height: 200px;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.247);
 }
 dialog div {
-    width: max-content;
-    position: relative;
-    top: 90px;
-    left: 152px;
+  width: max-content;
+  position: relative;
+  top: 90px;
+  left: 152px;
 }
 dialog div button {
-    margin: 0;
-    padding: 10px 20px;
+  margin: 0;
+  padding: 10px 20px;
 }
 p#dialogtext {
-    margin: 30px 0 0 30px;
+  margin: 30px 0 0 30px;
 }
-input[type="text"] {
-    margin-left: 30px;
-    width: 163px;
-    height: 25px;
-    font-size: 21px;
-    border: 0;
-    border-bottom: 1px solid black;
+input[type='text'] {
+  margin-left: 30px;
+  width: 163px;
+  height: 25px;
+  font-size: 21px;
+  border: 0;
+  border-bottom: 1px solid black;
 }
-.file button, .folder button {
-    margin: 20px 5px 5px 0;
-    width: min-content;
-    height: 10px;
-    color: white;
-    padding: 0;
-    align-self: flex-end;
-    background: black;
-    cursor: pointer;
+.file button,
+.folder button {
+  margin: 0 2px 0 0;
+  width: min-content;
+  height: 10px;
+  color: indigo;
+  padding: 5px 2px 0 0;
+  background: transparent;
+  cursor: pointer;
 }
-.file h1, .folder h1 {
-    mix-blend-mode: lighten;
+.file h1,
+.folder h1 {
+  font-size: 25px;
 }
-#files, #folders {display:flex;flex-wrap:wrap}
-input[type="file"] {
-    background-color: rgba(0, 0, 0, .1);
-    border-radius: 5px 5px 0 0;
+#files,
+#folders {
+  display: flex;
+  flex-wrap: wrap;
+}
+input[type='file'] {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 5px 5px 0 0;
+  color: white;
+}
+.flex-max {
+  display: flex;
+  width: 130px;
+  justify-content: space-between;
 }
