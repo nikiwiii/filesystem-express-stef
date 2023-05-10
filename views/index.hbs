@@ -8,36 +8,43 @@
         </form>
     </div>
     <div class="right" style="overflow-y: scroll">
-        {{#each files}}
-            <form method="get" id="folders" onsubmit="return logdelete(this)">
-            {{#each this}}
-                {{#if this.type}}
-                <div class="folder">
-                    <div class="flex-max">
-                        <h1>📁</h1>
-                        <button formaction="/folder&name={{this.name}}">X</button>
-                    </div>
-                    <p>{{this.name}}</p>
-                </div>
-                {{/if}}
+        <div class="path">
+            {{#each pathArr}}
+            <p>{{this}}</p>
+            <p style="color: grey;">&nbsp;&gt;&nbsp;</p>
             {{/each}}
-            </form>
-            <form method="get" id="files" onsubmit="return logdelete(this)">
-                {{#each this}}
-                    {{#if this.type}}
-                    {{else}}
-                    <div class="file">
-                        <div class="flex-max">
-                            <h1>📝</h1>
-                            <button formaction="/file&name={{this.fullname}}">X</button>
-                        </div>
-                        <div style="display: flex">
-                            <p>{{this.name}}</p><p style="position: relative;left: -5px;">{{this.format}}</p>
-                        </div>
-                    </div>
-                    {{/if}}
-                {{/each}}
-            </form>
+        </div>
+        {{#each files}}
+        <form method="get" id="folders" onsubmit="return logdelete(this)">
+            {{#each this}}
+            {{#if this.type}}
+            <div class="folder">
+                <div class="flex-max">
+                    <h1>📁</h1>
+                    <button formaction="/folder&name={{this.name}}">X</button>
+                </div>
+                <a href="/path={{this.path}}">{{this.name}}</a>
+            </div>
+            {{/if}}
+            {{/each}}
+        </form>
+        <form method="get" id="files" onsubmit="return logdelete(this)">
+            {{#each this}}
+            {{#if this.type}}
+            {{else}}
+            <div class="file">
+                <div class="flex-max">
+                    <h1>📝</h1>
+                    <button formaction="/file&name={{this.fullname}}">X</button>
+                </div>
+                <div style="display: flex">
+                    <p>{{this.name}}</p>
+                    <p style="position: relative;left: -5px;">{{this.format}}</p>
+                </div>
+            </div>
+            {{/if}}
+            {{/each}}
+        </form>
         {{/each}}
     </div>
 </div>
