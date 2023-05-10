@@ -17,7 +17,7 @@ body {
   background: rgb(2, 0, 36);
   display: flex;
   align-items: center;
-  padding-left: 40px;
+  padding-left: 20px;
 }
 
 .body {
@@ -60,6 +60,7 @@ button {
   padding: 15px;
   color: white;
   background: rgb(2, 0, 36);
+  cursor: pointer;
 }
 
 .file,

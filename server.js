@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
   res.render('index.hbs', {
     files: segregate(),
       pathArr: getPathArr(),
-      nonuploadfolder: currentPath.length !== 11 ? true : false
+      nonuploadfolder: currentPath.length !== 11 ? true : false //czy obecny folder jest inny niz /upload
   });
 });
 
