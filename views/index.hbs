@@ -2,16 +2,21 @@
     <div class="left">
         <button id="addfolder">Nowy folder</button>
         <button id="addfile">Nowy plik tekstowy</button>
+        {{#if nonuploadfolder}}
+            <button>Zmień nazwę obecnego folderu</button>
+        {{/if}}
         <form action="/uploadf" method="post" class="right" style="padding: 0;background: transparent" id="uploadform">
             <input type="file" name="filefold" id="file-upload">
-            <button id="upload" style="border-radius: 0 0 5px 5px;" type="button">wybierz</button>
+            <button id="upload" style="border-radius: 0 0 10px 10px;" type="button">wybierz</button>
         </form>
     </div>
     <div class="right" style="overflow-y: scroll">
         <div class="path">
             {{#each pathArr}}
-            <p>{{this}}</p>
-            <p style="color: grey;">&nbsp;&gt;&nbsp;</p>
+                {{#if this.name}}
+                <a href="name={{this.path}}">{{this.name}}</a>
+                <p style="color: grey;">&nbsp;&gt;&nbsp;</p>
+                {{/if}}
             {{/each}}
         </div>
         {{#each files}}
@@ -23,7 +28,7 @@
                     <h1>📁</h1>
                     <button formaction="/folder&name={{this.name}}">X</button>
                 </div>
-                <a href="/path={{this.path}}">{{this.name}}</a>
+                <a href="name={{this.path}}">{{this.name}}</a>
             </div>
             {{/if}}
             {{/each}}

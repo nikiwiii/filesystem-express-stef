@@ -26,8 +26,8 @@ body {
 
 .left {
   width: 20%;
-  height: 81.6vh;
-  padding: 20px;
+  height: 86.8vh;
+  padding: 0 20px 20px 20px;
   background: rgb(2, 0, 36);
   display: flex;
   flex-direction: column;
@@ -42,6 +42,7 @@ body {
 }
 
 .right {
+  border-radius: 10px;
   width: 100%;
   padding-top: 20px;
   display: flex;
@@ -55,7 +56,7 @@ body {
 button {
   border: 0;
   margin-bottom: 20px;
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 15px;
   color: white;
   background: rgb(2, 0, 36);
@@ -160,7 +161,7 @@ input[type='text'] {
 
 input[type='file'] {
   background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 5px 5px 0 0;
+  border-radius: 10px 10px 0 0;
   color: white;
 }
 
@@ -177,7 +178,7 @@ input[type='file'] {
   margin-bottom: 20px;
 }
 
-.path p {
+.path * {
   color: white;
   font-size: 25px;
 }

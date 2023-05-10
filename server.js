@@ -14,18 +14,18 @@ app.engine(
     helpers: {},
   })
 );
-let currPath = './upload/'
+let currentPath = './upload///'
 
 const segregate = () => {
   let folders = [];
   let files = [];
-  let tab = fs.readdirSync(currPath);
+  let tab = fs.readdirSync(currentPath);
   tab.forEach((e) => {
-    if (fs.lstatSync(currPath + e).isDirectory()) {
+    if (fs.lstatSync(currentPath + e).isDirectory()) {
       folders.push({
         name: e,
         type: true,
-        path: currPath + e
+        path: currentPath.substr(9,currentPath.length).replaceAll('/','~') + e //query zachowa path z '-' zamiast '/'
       });
     } else {
       files.push({
@@ -40,14 +40,31 @@ const segregate = () => {
 };
 
 const getPathArr = () => {
-  return currPath.substr(2, currPath.length - 3).split('/')
+  let pathobj = []
+  patharr = currentPath.substr(2, currentPath.length).split('/')
+  temp = ''
+  patharr.forEach((e, i) => {
+    if(i != 0) {
+      temp += e + '~'
+    }
+    else {
+      temp += '~'
+    }
+    pathobj.push({
+      path: temp,
+      name: e
+    })
+  });
+  pathobj[pathobj.length-1].path.substr(0, pathobj[pathobj.length-1].path.length-1) //usuniecie ostatniego '/'
+  return pathobj
 }
 
 
 app.get('/', (req, res) => {
   res.render('index.hbs', {
     files: segregate(),
-    pathArr: getPathArr(currPath),
+      pathArr: getPathArr(),
+      nonuploadfolder: currentPath.length !== 11 ? true : false
   });
 });
 
@@ -59,22 +76,26 @@ app.use(
 app.use(express.static('static'));
 
 app.post('/newfolder', (req, res) => {
-  if (!fs.existsSync(currPath + req.body.name)) {
-    fs.mkdir(currPath + req.body.name, (err) => {
+  if (!fs.existsSync(currentPath + req.body.name)) {
+    fs.mkdir(currentPath + req.body.name, (err) => {
       if (err) throw err;
       console.log('stworzono ' + req.body.name);
       res.render('index.hbs', {
         files: segregate(),
+        pathArr: getPathArr(),
+        nonuploadfolder: currentPath.length !== 11 ? true : false
       });
     });
   } else {
     fs.mkdir(
-      currPath + req.body.name + '_kopia_' + new Date().valueOf(),
+      currentPath + req.body.name + '_kopia_' + new Date().valueOf(),
       (err) => {
         if (err) throw err;
         console.log('stworzono kopie ' + req.body.name);
         res.render('index.hbs', {
           files: segregate(),
+          pathArr: getPathArr(),
+          nonuploadfolder: currentPath.length !== 11 ? true : false
         });
       }
     );
@@ -86,17 +107,19 @@ app.post('/newfile', (req, res) => {
   if (!name.includes('.')) {
     name += '.txt';
   }
-  if (!fs.existsSync(currPath + name)) {
-    fs.appendFile(currPath + name, '', (err) => {
+  if (!fs.existsSync(currentPath + name)) {
+    fs.appendFile(currentPath + name, '', (err) => {
       if (err) throw err;
       console.log('stworzono ' + name);
       res.render('index.hbs', {
         files: segregate(),
+        pathArr: getPathArr(),
+        nonuploadfolder: currentPath.length !== 11 ? true : false
       });
     });
   } else {
     fs.appendFile(
-      currPath +
+      currentPath +
       name.substr(0, name.indexOf('.')) +
       '_kopia_' +
       new Date().valueOf() +
@@ -107,6 +130,8 @@ app.post('/newfile', (req, res) => {
         console.log('stworzono kopie ' + name);
         res.render('index.hbs', {
           files: segregate(),
+          pathArr: getPathArr(),
+          nonuploadfolder: currentPath.length !== 11 ? true : false
         });
       }
     );
@@ -115,52 +140,63 @@ app.post('/newfile', (req, res) => {
 
 app.get('/folder&name=:name', (req, res) => {
   const name = req.params.name;
-  if (fs.existsSync(currPath + name)) {
-    fs.rmdir(currPath + name, (err) => {
+  if (fs.existsSync(currentPath + name)) {
+    fs.rm(currentPath + name, {recursive: true, force: true}, (err) => {
       if (err) throw err;
       console.log('usunieto ' + name);
       res.render('index.hbs', {
         files: segregate(),
+        pathArr: getPathArr(),
+        nonuploadfolder: currentPath.length !== 11 ? true : false
       });
     });
   }
 });
 app.get('/file&name=:name', (req, res) => {
   const name = req.params.name;
-  if (fs.existsSync(currPath + name)) {
-    fs.unlink(currPath + name, (err) => {
+  if (fs.existsSync(currentPath + name)) {
+    fs.unlink(currentPath + name, (err) => {
       if (err) throw err;
-      console.log('usunieto ' + req.body.name);
+      console.log('usunieto ' + req.params.name);
       res.render('index.hbs', {
         files: segregate(),
+        pathArr: getPathArr(),
+        nonuploadfolder: currentPath.length !== 11 ? true : false
       });
     });
   }
 });
 
 app.post('/uploadf', (req, res) => {
-  if (!fs.existsSync(currPath + req.body.filefold)) {
-    fs.appendFile(currPath + req.body.filefold, '', (err) => {
+  if (!fs.existsSync(currentPath + req.body.filefold)) {
+    fs.appendFile(currentPath + req.body.filefold, '', (err) => {
       if (err) throw err;
       console.log('wrzucono ' + req.body.filefold);
     });
   } else {
     fs.appendFile(
-      currPath + req.body.filefold + '_kopia_' + new Date().valueOf(),
+      currentPath + req.body.filefold + '_kopia_' + new Date().valueOf(),
       '',
       (err) => {
         if (err) throw err;
         console.log('wrzucono kopie ' + req.body.filefold);
         res.render('index.hbs', {
           files: segregate(),
+          pathArr: getPathArr(),
+          nonuploadfolder: currentPath.length !== 11 ? true : false
         });
       }
     );
   }
 });
 
-app.get('/path=:path', (req, res) => {
-  currPath = req.params.path
+app.get('/name=:path', (req, res) => {
+  currentPath = './upload/' + (req.params.path.replaceAll('~','/')) + '/'
+  res.render('index.hbs', {
+    files: segregate(),
+    pathArr: getPathArr(),
+    nonuploadfolder: currentPath.length !== 11 ? true : false
+  });
 })
 
 app.listen(port, () => {
