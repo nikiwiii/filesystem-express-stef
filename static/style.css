@@ -71,13 +71,17 @@ button {
   margin: 0 0 20px 20px;
   padding-bottom: 2px;
   border-radius: 5px;
-  background: white;
+  mix-blend-mode: lighten;
+  background-color: white;
+}
+
+button:hover {
+  filter: brightness(90%);
 }
 
 .file:hover,
-.folder:hover,
-button:hover {
-  filter: brightness(110%);
+.folder:hover {
+  padding: 2px;
 }
 
 .file p,
@@ -94,10 +98,6 @@ button:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.folder {
-  background-color: gainsboro
 }
 
 dialog {
@@ -124,7 +124,7 @@ dialog div button {
   padding: 10px 20px;
 }
 
-p#dialogtext {
+dialog form p {
   margin: 30px 0 0 30px;
 }
 
@@ -143,15 +143,15 @@ input[type='text'] {
   width: min-content;
   height: 10px;
   color: indigo;
-  padding: 5px 2px 0 0;
+  padding: 5px 1.5px 0 0;
   background: transparent;
   cursor: pointer;
 }
 
-.file h1,
-.folder h1 {
+.file i,
+.folder i {
+  padding: 3px;
   font-size: 40px;
-  cursor: default;
 }
 
 #files,
