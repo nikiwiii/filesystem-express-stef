@@ -81,7 +81,7 @@ button:hover {
 
 .file:hover,
 .folder:hover {
-  padding: 2px;
+  background-color: rgb(236, 236, 236);
 }
 
 .file p,
@@ -90,7 +90,6 @@ button:hover {
   color: indigo;
   font-size: 18px;
   padding: 3px 3px 0 3px;
-  text-decoration: none;
 }
 
 .file div p:first-of-type,
