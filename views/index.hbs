@@ -6,8 +6,12 @@
             <button id="newnamebtn">Zmień nazwę obecnego folderu</button>
         {{/if}}
         <form action="/uploadf" method="post" class="right" style="padding: 0;background: transparent" id="uploadform">
-            <input type="file" name="filefold" id="file-upload">
-            <button id="upload" style="border-radius: 0 0 10px 10px;" type="button">wybierz</button>
+            <div>
+                <input type="file" name="filefold" id="file-upload" hidden>
+                <label for="file-upload"><i class="fa-solid fa-arrow-up-from-bracket"></i></label>
+                <span id="file-chosen">Nie wybrano pliku</span>
+            </div>
+            <button id="upload" style="border-radius: 0 0 10px 10px;" type="button">Wybierz</button>
         </form>
     </div>
     <div class="right" style="overflow-y: scroll">
