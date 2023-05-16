@@ -10,8 +10,14 @@ const upload = document.querySelector('#upload');
 const uploadform = document.querySelector('#uploadform');
 const delfile = document.querySelector('#delfilebtn');
 const delfolder = document.querySelector('#delfolderbtn');
-const nameFormBtn = document.querySelector('#newnamebtn')
-const nameForm = document.querySelector('#new-element-name')
+const nameFormBtn = document.querySelector('#newnamebtn');
+const nameForm = document.querySelector('#new-element-name');
+const actualBtn = document.getElementById('file-upload');
+const fileChosen = document.getElementById('file-chosen');
+
+actualBtn.addEventListener('change', () => {
+  fileChosen.textContent = this.files[0].name;
+});
 
 upload.addEventListener('click', () => {
   if (document.querySelector('#file-upload').value) {
@@ -36,7 +42,7 @@ function logdelete(event) {
 }
 nameFormBtn.addEventListener('click', () => {
   nameForm.showModal();
-})
+});
 cancelBtn2.addEventListener('click', () => {
   nameForm.close();
 });
