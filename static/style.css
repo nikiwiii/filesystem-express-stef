@@ -33,12 +33,16 @@ body {
   flex-direction: column;
 }
 
-.left * {
-  border: 0.5px solid white;
+.left button {
+  background-color: rgb(44, 0, 75);
 }
 
-.left #uploadform {
-  border: none !important;
+label {
+  background: white;
+  border-radius: 5px 5px 0 0;
+  padding: 4px;
+  width: max-content;
+  cursor: pointer;
 }
 
 .right {
@@ -47,10 +51,28 @@ body {
   padding-top: 20px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(90deg,
-      rgb(44, 0, 75) 0%,
-      rgb(104, 0, 104) 60%,
-      rgb(255, 0, 140) 100%);
+  background: linear-gradient(
+    90deg,
+    rgb(44, 0, 75) 0%,
+    rgb(104, 0, 104) 60%,
+    rgb(255, 0, 140) 100%
+  );
+}
+
+#uploadform div {
+  display: flex;
+  font-size: 14px;
+}
+
+span#file-chosen {
+  cursor: default;
+  border-bottom: 0.5px solid white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+  display: flex;
+  align-items: center;
 }
 
 button {
@@ -65,7 +87,7 @@ button {
 
 .file,
 .folder {
-  width: 130px;
+  width: 100px;
   display: flex;
   flex-direction: column;
   margin: 0 0 20px 20px;
@@ -149,7 +171,7 @@ input[type='text'] {
 
 .file i,
 .folder i {
-  padding: 3px;
+  padding: 3px !important;
   font-size: 40px;
 }
 
@@ -167,7 +189,6 @@ input[type='file'] {
 
 .flex-max {
   display: flex;
-  width: 130px;
   justify-content: space-between;
 }
 
