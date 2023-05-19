@@ -51,12 +51,10 @@ label {
   padding-top: 20px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(
-    90deg,
-    rgb(44, 0, 75) 0%,
-    rgb(104, 0, 104) 60%,
-    rgb(255, 0, 140) 100%
-  );
+  background: linear-gradient(90deg,
+      rgb(44, 0, 75) 0%,
+      rgb(104, 0, 104) 60%,
+      rgb(255, 0, 140) 100%);
 }
 
 #uploadform div {
@@ -65,6 +63,7 @@ label {
 }
 
 span#file-chosen {
+  width: 100%;
   cursor: default;
   border-bottom: 0.5px solid white;
   white-space: nowrap;
@@ -106,6 +105,7 @@ button:hover {
   background-color: rgb(236, 236, 236);
 }
 
+.file a,
 .file p,
 .folder a {
   user-select: none;
@@ -115,6 +115,7 @@ button:hover {
 }
 
 .file div p:first-of-type,
+.file div a:first-of-type,
 .folder a:first-of-type {
   white-space: nowrap;
   overflow: hidden;
@@ -202,4 +203,10 @@ input[type='file'] {
 .path * {
   color: white;
   font-size: 25px;
+}
+
+textarea {
+  resize: none;
+  height: 70vh;
+  width: 100%
 }
