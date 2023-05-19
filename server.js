@@ -14,7 +14,7 @@ app.engine(
     helpers: {},
   })
 );
-let currentPath = './upload///'
+let currentPath = './upload/';
 
 const segregate = () => {
   let folders = [];
@@ -25,7 +25,8 @@ const segregate = () => {
       folders.push({
         name: e,
         type: true,
-        path: currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e //query zachowa path z '~' zamiast '/'
+        path:
+          currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e, //query zachowa path z '~' zamiast '/'
       });
     } else {
       files.push({
@@ -33,7 +34,8 @@ const segregate = () => {
         format: e.substr(e.indexOf('.'), e.length),
         type: false,
         fullname: e,
-        path: currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e
+        path:
+          currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e,
       });
     }
   });
@@ -41,31 +43,32 @@ const segregate = () => {
 };
 
 const getPathArr = () => {
-  let pathobj = []
-  patharr = currentPath.substr(2, currentPath.length).split('/')
-  temp = ''
+  let pathobj = [];
+  patharr = currentPath.substr(2, currentPath.length).split('/');
+  temp = '';
   patharr.forEach((e, i) => {
     if (i != 0) {
-      temp += e + '~'
-    }
-    else {
-      temp += '~'
+      temp += e + '~';
+    } else {
+      temp += '~';
     }
     pathobj.push({
       path: temp,
-      name: e
-    })
+      name: e,
+    });
   });
-  pathobj[pathobj.length - 1].path.substr(0, pathobj[pathobj.length - 1].path.length - 1) //usuniecie ostatniego '/'
-  return pathobj
-}
-
+  pathobj[pathobj.length - 1].path.substr(
+    0,
+    pathobj[pathobj.length - 1].path.length - 1
+  ); //usuniecie ostatniego '/'
+  return pathobj;
+};
 
 app.get('/', (req, res) => {
   res.render('index.hbs', {
     files: segregate(),
     pathArr: getPathArr(),
-    nonuploadfolder: currentPath.length !== 11 ? true : false //czy obecny folder jest inny niz /upload
+    nonuploadfolder: currentPath.length !== 9 ? true : false, //czy obecny folder jest inny niz /upload
   });
 });
 
@@ -84,7 +87,7 @@ app.post('/newfolder', (req, res) => {
       res.render('index.hbs', {
         files: segregate(),
         pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 11 ? true : false
+        nonuploadfolder: currentPath.length !== 9 ? true : false,
       });
     });
   } else {
@@ -96,7 +99,7 @@ app.post('/newfolder', (req, res) => {
         res.render('index.hbs', {
           files: segregate(),
           pathArr: getPathArr(),
-          nonuploadfolder: currentPath.length !== 11 ? true : false
+          nonuploadfolder: currentPath.length !== 9 ? true : false,
         });
       }
     );
@@ -115,16 +118,16 @@ app.post('/newfile', (req, res) => {
       res.render('index.hbs', {
         files: segregate(),
         pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 11 ? true : false
+        nonuploadfolder: currentPath.length !== 9 ? true : false,
       });
     });
   } else {
     fs.appendFile(
       currentPath +
-      name.substr(0, name.indexOf('.')) +
-      '_kopia_' +
-      new Date().valueOf() +
-      name.substr(name.indexOf('.'), name.length),
+        name.substr(0, name.indexOf('.')) +
+        '_kopia_' +
+        new Date().valueOf() +
+        name.substr(name.indexOf('.'), name.length),
       '',
       (err) => {
         if (err) throw err;
@@ -132,7 +135,7 @@ app.post('/newfile', (req, res) => {
         res.render('index.hbs', {
           files: segregate(),
           pathArr: getPathArr(),
-          nonuploadfolder: currentPath.length !== 11 ? true : false
+          nonuploadfolder: currentPath.length !== 9 ? true : false,
         });
       }
     );
@@ -148,7 +151,7 @@ app.get('/folder&name=:name', (req, res) => {
       res.render('index.hbs', {
         files: segregate(),
         pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 11 ? true : false
+        nonuploadfolder: currentPath.length !== 9 ? true : false,
       });
     });
   }
@@ -162,7 +165,7 @@ app.get('/file&name=:name', (req, res) => {
       res.render('index.hbs', {
         files: segregate(),
         pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 11 ? true : false
+        nonuploadfolder: currentPath.length !== 9 ? true : false,
       });
     });
   }
@@ -176,7 +179,7 @@ app.post('/uploadf', (req, res) => {
       res.render('index.hbs', {
         files: segregate(),
         pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 11 ? true : false
+        nonuploadfolder: currentPath.length !== 9 ? true : false,
       });
     });
   } else {
@@ -189,7 +192,7 @@ app.post('/uploadf', (req, res) => {
         res.render('index.hbs', {
           files: segregate(),
           pathArr: getPathArr(),
-          nonuploadfolder: currentPath.length !== 11 ? true : false
+          nonuploadfolder: currentPath.length !== 9 ? true : false,
         });
       }
     );
@@ -197,33 +200,64 @@ app.post('/uploadf', (req, res) => {
 });
 
 app.get('/name=:path', (req, res) => {
-  currentPath = './upload/' + (req.params.path.replaceAll('~', '/')) + '/'
+  currentPath =
+    './upload' +
+    (req.params.path[0] === '~'
+      ? req.params.path.replaceAll('~', '/')
+      : '/' + req.params.path.replaceAll('~', '/'));
+  currentPath[currentPath.length] !== '/' ? (currentPath += '/') : null;
+  console.log(currentPath);
   res.render('index.hbs', {
     files: segregate(),
     pathArr: getPathArr(),
-    nonuploadfolder: currentPath.length !== 11 ? true : false
+    nonuploadfolder: currentPath.length !== 9 ? true : false,
   });
-})
+});
 
 app.post('/newfoldername', (req, res) => {
   console.log(currentPath);
-  console.log(currentPath.substr(0, currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')) + '/' + req.body.name + '/');
-  fs.rename(currentPath, currentPath.substr(0, currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')) + '/' + req.body.name + '/', (err) => {
-    if (err) throw err
-    currentPath = currentPath.substr(0, currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')) + '/' + req.body.name + '/'
-    res.render('index.hbs', {
-      files: segregate(),
-      pathArr: getPathArr(),
-      nonuploadfolder: currentPath.length !== 11 ? true : false
-    });
-  })
-})
+  console.log(
+    currentPath.substr(
+      0,
+      currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')
+    ) +
+      '/' +
+      req.body.name +
+      '/'
+  );
+  fs.rename(
+    currentPath,
+    currentPath.substr(
+      0,
+      currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')
+    ) +
+      '/' +
+      req.body.name +
+      '/',
+    (err) => {
+      if (err) throw err;
+      currentPath =
+        currentPath.substr(
+          0,
+          currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')
+        ) +
+        '/' +
+        req.body.name +
+        '/';
+      res.render('index.hbs', {
+        files: segregate(),
+        pathArr: getPathArr(),
+        nonuploadfolder: currentPath.length !== 9 ? true : false,
+      });
+    }
+  );
+});
 
 app.get('/edit=:path', (req, res) => {
   res.render('edytor.hbs', {
-    path: req.params.path
+    path: req.params.path,
   });
-})
+});
 
 app.listen(port, () => {
   console.log(`Server listening on port: ${port}`);
