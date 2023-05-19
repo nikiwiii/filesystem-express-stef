@@ -37,6 +37,9 @@ const segregate = () => {
         path:
           currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e,
       });
+      console.log(
+        currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e
+      );
     }
   });
   return [folders, files];
@@ -205,7 +208,7 @@ app.get('/name=:path', (req, res) => {
     (req.params.path[0] === '~'
       ? req.params.path.replaceAll('~', '/')
       : '/' + req.params.path.replaceAll('~', '/'));
-  currentPath[currentPath.length] !== '/' ? (currentPath += '/') : null;
+  currentPath[currentPath.length - 1] !== '/' ? (currentPath += '/') : null;
   console.log(currentPath);
   res.render('index.hbs', {
     files: segregate(),
@@ -215,16 +218,6 @@ app.get('/name=:path', (req, res) => {
 });
 
 app.post('/newfoldername', (req, res) => {
-  console.log(currentPath);
-  console.log(
-    currentPath.substr(
-      0,
-      currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')
-    ) +
-      '/' +
-      req.body.name +
-      '/'
-  );
   fs.rename(
     currentPath,
     currentPath.substr(
@@ -232,8 +225,7 @@ app.post('/newfoldername', (req, res) => {
       currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')
     ) +
       '/' +
-      req.body.name +
-      '/',
+      req.body.name,
     (err) => {
       if (err) throw err;
       currentPath =
@@ -254,8 +246,14 @@ app.post('/newfoldername', (req, res) => {
 });
 
 app.get('/edit=:path', (req, res) => {
-  res.render('edytor.hbs', {
-    path: req.params.path,
+  console.log(req.params.path);
+  fs.readFile('./upload/' + req.params.path, 'utf8', (err, data) => {
+    if (err) throw err;
+    console.log(data);
+    res.render('edytor.hbs', {
+      path: './upload/' + req.params.path,
+      contents: data,
+    });
   });
 });
 
