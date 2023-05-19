@@ -1,18 +1,19 @@
 <div class="body">
     <div class="left">
-        <div>
-            <button style="width: 33%">font -</button>
-            <button style="width: 33%">kolory</button>
-            <button style="width: 33%">font +</button>
+        <div class='small-btns'>
+            <button>font--</button>
+            <button style="background-color: rgba(255, 0, 140, .5)">kolory</button>
+            <button>font++</button>
         </div>
         <button id="addfile">Zapisz ustawienia</button>
         <button id="rename">Zmiana nazwy</button>
         <button id="addfile">Podgląd pliku</button>
     </div>
     <div class="right" style="overflow-y: scroll">
-        <div class="path">
-            <textarea name="" id="" cols="30" rows="10" style="width: 20px"></textarea>
-            <textarea name="" id="" cols="30" rows="10"></textarea>
+        <p style='color: white'>{{path}}</p>
+        <div class="flex-max">
+            <textarea name="" id="" cols="30" rows="10" style="width: 10px"></textarea>
+            <textarea name="" id="" cols="30" rows="10">{{contents}}</textarea>
         </div>
     </div>
 
