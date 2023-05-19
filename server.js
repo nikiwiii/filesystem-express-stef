@@ -25,14 +25,15 @@ const segregate = () => {
       folders.push({
         name: e,
         type: true,
-        path: currentPath.substr(9,currentPath.length).replaceAll('/','~') + e //query zachowa path z '-' zamiast '/'
+        path: currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e //query zachowa path z '~' zamiast '/'
       });
     } else {
       files.push({
         name: e.substr(0, e.indexOf('.')),
         format: e.substr(e.indexOf('.'), e.length),
         type: false,
-        fullname: e
+        fullname: e,
+        path: currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e
       });
     }
   });
@@ -44,7 +45,7 @@ const getPathArr = () => {
   patharr = currentPath.substr(2, currentPath.length).split('/')
   temp = ''
   patharr.forEach((e, i) => {
-    if(i != 0) {
+    if (i != 0) {
       temp += e + '~'
     }
     else {
@@ -55,7 +56,7 @@ const getPathArr = () => {
       name: e
     })
   });
-  pathobj[pathobj.length-1].path.substr(0, pathobj[pathobj.length-1].path.length-1) //usuniecie ostatniego '/'
+  pathobj[pathobj.length - 1].path.substr(0, pathobj[pathobj.length - 1].path.length - 1) //usuniecie ostatniego '/'
   return pathobj
 }
 
@@ -63,8 +64,8 @@ const getPathArr = () => {
 app.get('/', (req, res) => {
   res.render('index.hbs', {
     files: segregate(),
-      pathArr: getPathArr(),
-      nonuploadfolder: currentPath.length !== 11 ? true : false //czy obecny folder jest inny niz /upload
+    pathArr: getPathArr(),
+    nonuploadfolder: currentPath.length !== 11 ? true : false //czy obecny folder jest inny niz /upload
   });
 });
 
@@ -141,7 +142,7 @@ app.post('/newfile', (req, res) => {
 app.get('/folder&name=:name', (req, res) => {
   const name = req.params.name;
   if (fs.existsSync(currentPath + name)) {
-    fs.rm(currentPath + name, {recursive: true, force: true}, (err) => {
+    fs.rm(currentPath + name, { recursive: true, force: true }, (err) => {
       if (err) throw err;
       console.log('usunieto ' + name);
       res.render('index.hbs', {
@@ -172,6 +173,11 @@ app.post('/uploadf', (req, res) => {
     fs.appendFile(currentPath + req.body.filefold, '', (err) => {
       if (err) throw err;
       console.log('wrzucono ' + req.body.filefold);
+      res.render('index.hbs', {
+        files: segregate(),
+        pathArr: getPathArr(),
+        nonuploadfolder: currentPath.length !== 11 ? true : false
+      });
     });
   } else {
     fs.appendFile(
@@ -191,11 +197,31 @@ app.post('/uploadf', (req, res) => {
 });
 
 app.get('/name=:path', (req, res) => {
-  currentPath = './upload/' + (req.params.path.replaceAll('~','/')) + '/'
+  currentPath = './upload/' + (req.params.path.replaceAll('~', '/')) + '/'
   res.render('index.hbs', {
     files: segregate(),
     pathArr: getPathArr(),
     nonuploadfolder: currentPath.length !== 11 ? true : false
+  });
+})
+
+app.post('/newfoldername', (req, res) => {
+  console.log(currentPath);
+  console.log(currentPath.substr(0, currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')) + '/' + req.body.name + '/');
+  fs.rename(currentPath, currentPath.substr(0, currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')) + '/' + req.body.name + '/', (err) => {
+    if (err) throw err
+    currentPath = currentPath.substr(0, currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')) + '/' + req.body.name + '/'
+    res.render('index.hbs', {
+      files: segregate(),
+      pathArr: getPathArr(),
+      nonuploadfolder: currentPath.length !== 11 ? true : false
+    });
+  })
+})
+
+app.get('/edit=:path', (req, res) => {
+  res.render('edytor.hbs', {
+    path: req.params.path
   });
 })
 
