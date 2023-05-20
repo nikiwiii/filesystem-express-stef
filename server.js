@@ -33,13 +33,13 @@ const segregate = () => {
         name: e.substr(0, e.indexOf('.')),
         format: e.substr(e.indexOf('.'), e.length),
         type: false,
+        html: e.substr(e.indexOf('.') + 1, e.length) === 'html' ? true : false,
+        css: e.substr(e.indexOf('.') + 1, e.length) === 'css' ? true : false,
+        js: e.substr(e.indexOf('.') + 1, e.length) === 'js' ? true : false,
         fullname: e,
         path:
           currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e,
       });
-      console.log(
-        currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e
-      );
     }
   });
   return [folders, files];
@@ -179,6 +179,15 @@ app.post('/uploadf', (req, res) => {
     fs.appendFile(currentPath + req.body.filefold, '', (err) => {
       if (err) throw err;
       console.log('wrzucono ' + req.body.filefold);
+      // let text = fs.readFileSync(req.body.filefold[0]).toString('utf8');
+      // fs.writeFile(currentPath + req.body.filefold, text, (err) => {
+      //   res.render('index.hbs', {
+      //     files: segregate(),
+      //     pathArr: getPathArr(),
+      //     nonuploadfolder: currentPath.length !== 9 ? true : false,
+      //   });
+      // });
+
       res.render('index.hbs', {
         files: segregate(),
         pathArr: getPathArr(),
@@ -192,6 +201,14 @@ app.post('/uploadf', (req, res) => {
       (err) => {
         if (err) throw err;
         console.log('wrzucono kopie ' + req.body.filefold);
+        // let text = fs.readFileSync(req.body.filefold).toString('utf8');
+        // fs.writeFile(currentPath + req.body.filefold, text, (err) => {
+        //   res.render('index.hbs', {
+        //     files: segregate(),
+        //     pathArr: getPathArr(),
+        //     nonuploadfolder: currentPath.length !== 9 ? true : false,
+        //   });
+        // })
         res.render('index.hbs', {
           files: segregate(),
           pathArr: getPathArr(),
@@ -246,12 +263,13 @@ app.post('/newfoldername', (req, res) => {
 });
 
 app.get('/edit=:path', (req, res) => {
-  console.log(req.params.path);
-  fs.readFile('./upload/' + req.params.path, 'utf8', (err, data) => {
+  console.log(currentPath + req.params.path);
+  console.log(fs.existsSync(currentPath + req.params.path));
+  fs.readFile(currentPath + req.params.path, (err, data) => {
     if (err) throw err;
-    console.log(data);
+    console.log(data.toString('utf8'));
     res.render('edytor.hbs', {
-      path: './upload/' + req.params.path,
+      path: currentPath + req.params.path,
       contents: data,
     });
   });
