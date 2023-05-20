@@ -43,7 +43,15 @@
             {{else}}
             <div class="file">
                 <div class="flex-max">
-                    <i class="fa-solid fa-file"></i>
+                    {{#if this.html}}
+                        <i class="fa-brands fa-html5"></i>
+                    {{else if this.css}}
+                        <i class="fa-brands fa-css3-alt"></i>
+                    {{else if this.js}}
+                        <i class="fa-brands fa-square-js"></i>
+                    {{else}}
+                        <i class="fa-solid fa-file"></i>
+                    {{/if}}
                     <button formaction="/file&name={{this.fullname}}">X</button>
                 </div>
                 <div style="display: flex">
