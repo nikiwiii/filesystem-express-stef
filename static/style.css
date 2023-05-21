@@ -88,7 +88,8 @@ button {
 
 .file,
 .folder {
-  width: 100px;
+  min-width: 100px;
+  max-width: 200px;
   display: flex;
   flex-direction: column;
   margin: 0 0 20px 20px;
@@ -116,7 +117,6 @@ button:hover {
   padding: 3px 3px 0 3px;
 }
 
-.file div p:first-of-type,
 .file div a:first-of-type,
 .folder a:first-of-type {
   white-space: nowrap;
@@ -129,18 +129,23 @@ dialog {
   top: 50%;
   left: 50%;
   transform: translateY(-50%) translateX(-50%);
-  width: 300px;
-  height: 200px;
   border: 0;
   border-radius: 10px;
   box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.247);
+  padding: 20px;
+}
+
+dialog form {
+  display: flex;
+  flex-direction: column;
+  height: -webkit-fill-available;
 }
 
 dialog div {
-  width: max-content;
-  position: relative;
-  top: 90px;
-  left: 152px;
+  display: flex;
+  justify-content: end;
+  padding: 5px;
+  margin-top: 60px;
 }
 
 dialog div button {
@@ -148,12 +153,7 @@ dialog div button {
   padding: 10px 20px;
 }
 
-dialog form p {
-  margin: 30px 0 0 30px;
-}
-
 input[type='text'] {
-  margin-left: 30px;
   width: 163px;
   height: 25px;
   font-size: 21px;
@@ -178,7 +178,7 @@ input[type='text'] {
   font-size: 40px;
 }
 
-#files,
+#dfiles,
 #folders {
   display: flex;
   flex-wrap: wrap;
@@ -209,10 +209,21 @@ input[type='file'] {
 
 textarea {
   resize: none;
-  height: 70vh;
   width: 100%;
   color: black;
-  font: 'roboto';
+  font-family: monospace;
+  border: 0;
+  mix-blend-mode: lighten;
+}
+
+textarea:first-of-type {
+  border-right: 3px solid limegreen;
+}
+
+textarea:not(:first-of-type) {
+  white-space: nowrap;
+  overflow-x: scroll;
+  padding-left: 3px;
 }
 
 .small-btns {
@@ -225,3 +236,46 @@ textarea {
   width: 100%;
   height: 40px;
 }
+
+.scrollable {
+  overflow-y: scroll;
+  height: 85.6vh;
+}
+
+.style0 * {
+  color: black;
+  background-color: white;
+}
+.style0 textarea:first-of-type {
+  color: cornflowerblue;
+}
+.style1 * {
+  color: rgb(255 255 255 / .75);
+  background-color: rgb(51 13 55);
+}
+.style1 textarea:first-of-type {
+  color: burlywood;
+  border-right: 3px solid white;
+}
+.style2 * {
+  color: rgb(214, 214, 214);
+  background: rgb(2, 0, 36);
+  mix-blend-mode: normal;
+}
+.style2 textarea:first-of-type {
+  color: cornflowerblue;
+}
+.style3 * {
+  color: teal;
+  background-color: rgb(208 208 208);
+}
+.style3 textarea:first-of-type {
+  color: dimgray;
+}
+.editor-top {
+  background-color: rgba(34, 34, 34, 0.747); 
+  display: flex; 
+  justify-content: space-between;
+  border-radius: 10px 0 0 0;
+}
+

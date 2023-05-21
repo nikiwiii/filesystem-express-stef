@@ -5,7 +5,7 @@
         {{#if nonuploadfolder}}
         <button id="newnamebtn">Zmień nazwę obecnego folderu</button>
         {{/if}}
-        <form action="/uploadf" method="post" class="right" style="padding: 0;background: transparent" id="uploadform">
+        <form action="/uploadf" method="post" class="right" style="padding: 0;background: transparent" id="uploadform" enctype="multipart/form-data">
             <div>
                 <input type="file" name="filefold" id="file-upload" hidden>
                 <label for="file-upload"><i class="fa-solid fa-arrow-up-from-bracket"></i></label>
@@ -37,7 +37,7 @@
             {{/if}}
             {{/each}}
         </form>
-        <form method="get" id="files" onsubmit="return logdelete(this)">
+        <form method="get" id="dfiles" onsubmit="return logdelete(this)">
             {{#each this}}
             {{#if this.type}}
             {{else}}
