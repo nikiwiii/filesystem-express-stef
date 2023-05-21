@@ -259,7 +259,6 @@ app.get('/edit=:path', (req, res) => {
   // console.log(fs.existsSync(currentPath + req.params.path));
   let path = './upload/' + req.params.path.replaceAll('~','/')
   currentFile = path
-  console.log(path);
   fs.readFile(path, (err, data) => {
     if (err) throw err;
     res.render('edytor.hbs', {

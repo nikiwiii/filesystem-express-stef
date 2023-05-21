@@ -240,7 +240,7 @@ textarea:not(:first-of-type) {
 
 .scrollable {
   overflow-y: scroll;
-  height: 85.6vh;
+  height: 84vh;
 }
 
 .style0 * {
@@ -274,7 +274,8 @@ textarea:not(:first-of-type) {
   color: dimgray;
 }
 .editor-top {
-  background-color: rgba(34, 34, 34, 0.747); 
+  font-size: 18px;
+  padding: 5px;
   display: flex; 
   justify-content: space-between;
   border-radius: 10px 0 0 0;

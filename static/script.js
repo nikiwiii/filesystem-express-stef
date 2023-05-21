@@ -29,7 +29,6 @@ const cancelBtn3 = document.getElementById('cancel3')
 if (fontLessen){
   var fontSize = 14
   var styleIte = 0
-  let lines = textArea.value.split("\n");
   let val = 1
 
   updateFont = () => {
@@ -40,6 +39,7 @@ if (fontLessen){
     textArea.style.height = String(val * fontSize * 1.3) + 'px'
   }
 
+  let lines = textArea.value.split("\n");
   lines.forEach(e => {
     lineCounter.value += String(val) + '\n'
     val++
