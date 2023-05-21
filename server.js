@@ -257,11 +257,13 @@ app.post('/newfoldername', (req, res) => {
 app.get('/edit=:path', (req, res) => {
   // console.log(currentPath + req.params.path);
   // console.log(fs.existsSync(currentPath + req.params.path));
-  currentFile = currentPath + req.params.path
-  fs.readFile(currentPath + req.params.path, (err, data) => {
+  let path = './upload/' + req.params.path.replaceAll('~','/')
+  currentFile = path
+  console.log(path);
+  fs.readFile(path, (err, data) => {
     if (err) throw err;
     res.render('edytor.hbs', {
-      path: currentPath + req.params.path,
+      path: path,
       contents: data.toString('utf8'),
       currentFile: currentFile.substr(currentFile.lastIndexOf('/')+1, currentFile.length)
     });
@@ -287,7 +289,7 @@ app.get('/getSettings', (req,res) => {
 })
 
 app.post('/sendChanged', (req,res) => {
-  const data = JSON.parse(req.headers.body).newText
+  let data = JSON.parse(req.headers.body).newText
   fs.writeFile(currentFile, data, (err) => {
     res.send(JSON.stringify('zapisano zmiany'))
   })
