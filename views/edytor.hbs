@@ -11,12 +11,12 @@
     </div>
     <div class="right" style="padding: 0;">
         <div class="editor-top">
-            <p style='color: white; line-height: 36px;'>{{path}}</p>
+            <p style='color: white;align-self: center;'>{{path}}</p>
             <button style="width: 30%; margin: 5px; padding: 3px" id="saveChanges">Zapisz zmiany</button>
         </div>
         <div class="flex-max scrollable" id="style-switcher">
-            <textarea spellcheck="false" style="width: 32px; text-align: center" id="line-counter" readonly></textarea>
-            <textarea spellcheck="false" id="text-contents">{{contents}}</textarea>
+            <textarea style="width: 32px; text-align: center" id="line-counter" readonly></textarea>
+            <textarea spellcheck="false" id="text-contents" onkeyup="onTextareaInput()">{{contents}}</textarea>
         </div>
     </div>
 

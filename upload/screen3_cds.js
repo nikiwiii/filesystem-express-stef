@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, View, Text, Dimensions, Image, ToastAndroid } from 'react-native';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from "expo-media-library";
-import {DeviceEventEmitter} from "react-native"
+import {DeviceEventEmitter} from "react-native";
 
 class Screen4 extends React.Component {
     constructor(props) {

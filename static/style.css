@@ -43,6 +43,7 @@ label {
   padding: 4px;
   width: max-content;
   cursor: pointer;
+  width: 15.25px;
 }
 
 .right {
@@ -62,6 +63,7 @@ label {
 #uploadform div {
   display: flex;
   font-size: 14px;
+  height: 24px;
 }
 
 span#file-chosen {
@@ -177,6 +179,7 @@ input[type='text'] {
 .folder i {
   padding: 3px !important;
   font-size: 40px;
+  height: 40px
 }
 
 #dfiles,
@@ -215,6 +218,7 @@ textarea {
   font-family: monospace;
   border: 0;
   mix-blend-mode: lighten;
+  overflow-y: hidden;
 }
 
 textarea:first-of-type {
@@ -251,24 +255,33 @@ textarea:not(:first-of-type) {
   color: cornflowerblue;
 }
 .style1 * {
-  color: rgb(255 255 255 / .75);
-  background-color: rgb(51 13 55);
+  color: rgb(199 255 137);
+  background-color: #000d00;
+  mix-blend-mode: normal;
 }
 .style1 textarea:first-of-type {
-  color: burlywood;
-  border-right: 3px solid white;
+  color: white;
+}
+.style1 *::selection {
+  color: white;
+  background-color: #008900;
 }
 .style2 * {
   color: rgb(214, 214, 214);
   background: rgb(2, 0, 36);
   mix-blend-mode: normal;
 }
+.style2 *::selection {
+  color: cornflowerblue;
+  background-color: white;
+}
 .style2 textarea:first-of-type {
   color: cornflowerblue;
 }
 .style3 * {
-  color: teal;
-  background-color: rgb(208 208 208);
+  color: rgb(0, 190, 190);
+  background-color: rgb(28 28 28);
+  mix-blend-mode: luminosity;
 }
 .style3 textarea:first-of-type {
   color: dimgray;

@@ -60,18 +60,23 @@ if (fontLessen){
   })
 
   saveChanges.addEventListener('click', async() => {
-    const response = await fetch('http://192.168.10.112:4000/sendChanged', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        body: JSON.stringify({
-          newText: textArea.value
-        }),
-      },
-    });
-    const res = await response.json()
-    alert(res);
+    if (/[^\u0000-\u00ff]/g.test(textArea.value)) {//wykryj znaki spoza ISO
+      alert('wykryto znaki spoza standardu ISO-8859-1!')
+    }
+    else {
+      const response = await fetch('http://192.168.10.112:4000/sendChanged', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          body: JSON.stringify({
+            newText: textArea.value
+          }),
+        },
+      });
+      const res = await response.json()
+      alert(res);
+    }
   })
 
   renameFile.addEventListener('click', () => {
@@ -81,6 +86,31 @@ if (fontLessen){
   cancelBtn3.addEventListener('click', () => {
     fileNameDialog.close()
   })
+
+  arrayFromRange = (start, stop) => {
+    return Array.from(
+    { length: (stop - start) + 1 },
+    (value, index) => start + index
+    );
+  }
+
+  onTextareaInput = () => {
+    var key = window.event.keyCode;
+    if (key == 13) { //if enter dodaj linijke
+      lineCounter.value += String(val) + '\n'
+      lineCounter.style.height = String(val * fontSize * 1.3) + 'px'
+      textArea.style.height = String(val * fontSize * 1.3) + 'px'
+      val++
+    }
+    else if (key == 8) { //if backspace zlicz linijki
+      val = textArea.value.split("\n").length
+      counterArr = String(arrayFromRange(1,val)).replaceAll(',','\n') + '\n'
+      lineCounter.value = counterArr
+      lineCounter.style.height = String(val * fontSize * 1.3) + 'px'
+      textArea.style.height = String(val * fontSize * 1.3) + 'px'
+      val++
+    }
+}
 
   saveSettings.addEventListener('click', async() => {
     const response = await fetch('http://192.168.10.112:4000/sendSettings', {
