@@ -52,12 +52,10 @@ label {
   padding-top: 20px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(
-    90deg,
-    rgb(44, 0, 75) 0%,
-    rgb(104, 0, 104) 60%,
-    rgb(255, 0, 140) 100%
-  );
+  background: linear-gradient(90deg,
+      rgb(44, 0, 75) 0%,
+      rgb(104, 0, 104) 60%,
+      rgb(255, 0, 140) 100%);
 }
 
 #uploadform div {
@@ -251,46 +249,60 @@ textarea:not(:first-of-type) {
   color: black;
   background-color: white;
 }
+
 .style0 textarea:first-of-type {
   color: cornflowerblue;
 }
+
 .style1 * {
   color: rgb(199 255 137);
   background-color: #000d00;
   mix-blend-mode: normal;
 }
+
 .style1 textarea:first-of-type {
   color: white;
 }
+
 .style1 *::selection {
   color: white;
   background-color: #008900;
 }
+
 .style2 * {
   color: rgb(214, 214, 214);
   background: rgb(2, 0, 36);
   mix-blend-mode: normal;
 }
+
 .style2 *::selection {
   color: cornflowerblue;
   background-color: white;
 }
+
 .style2 textarea:first-of-type {
   color: cornflowerblue;
 }
+
 .style3 * {
   color: rgb(0, 190, 190);
   background-color: rgb(28 28 28);
   mix-blend-mode: luminosity;
 }
+
 .style3 textarea:first-of-type {
   color: dimgray;
 }
+
 .editor-top {
   font-size: 18px;
   padding: 5px;
-  display: flex; 
+  display: flex;
   justify-content: space-between;
   border-radius: 10px 0 0 0;
 }
 
+#main-image-div {
+  width: 100px;
+  height: 100px;
+}

@@ -257,22 +257,55 @@ app.post('/newfoldername', (req, res) => {
 app.get('/edit=:path', (req, res) => {
   // console.log(currentPath + req.params.path);
   // console.log(fs.existsSync(currentPath + req.params.path));
-  let path = './upload/' + req.params.path.replaceAll('~','/')
+  let path = './upload/' + req.params.path.replaceAll('~', '/')
   currentFile = path
-  fs.readFile(path, (err, data) => {
-    if (err) throw err;
-    res.render('edytor.hbs', {
+  const format = currentFile.substr(currentFile.lastIndexOf('.') + 1, currentFile.length)
+  if (['png', 'jpg', 'svg'].includes(format)) {
+    res.render('image-editor.hbs', {
+      urlPath: req.params.path,
       path: path,
-      contents: data.toString('utf8'),
-      currentFile: currentFile.substr(currentFile.lastIndexOf('/')+1, currentFile.length)
+      currentFile: currentFile.substr(currentFile.lastIndexOf('/') + 1, currentFile.length)
     });
-  });
+  }
+  else {
+    fs.readFile(path, (err, data) => {
+      if (err) throw err;
+      if (data == '') {
+        if (format == 'html') {
+          var starterData = `<!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta http-equiv="X-UA-Compatible" content="IE=edge">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Document</title>
+          </head>
+          <body>
+              
+          </body>
+          </html>`
+        }
+        else if (format == 'js') {
+          var starterData = 'let a = 0'
+        }
+        else if (format == 'css') {
+          var starterData = '* { margin: 0; padding: 0 }'
+        }
+      }
+      res.render('edytor.hbs', {
+        urlPath: req.params.path,
+        path: path,
+        contents: data !== '' ? data.toString('utf8') : starterData,
+        currentFile: currentFile.substr(currentFile.lastIndexOf('/') + 1, currentFile.length)
+      });
+    });
+  }
 });
 
 let editorFontSize = 14
 let editorColor = 2
 
-app.post('/sendSettings', (req,res) => {
+app.post('/sendSettings', (req, res) => {
   //body sie nie przekazuje samo wiec robie takie cos przepraszam
   let sentStuff = JSON.parse(req.headers.body)
   editorColor = sentStuff.color
@@ -280,24 +313,24 @@ app.post('/sendSettings', (req,res) => {
   res.send(JSON.stringify('zapisano'))
 })
 
-app.get('/getSettings', (req,res) => {
+app.get('/getSettings', (req, res) => {
   res.send(JSON.stringify({
     size: editorFontSize,
     color: editorColor
   }, null, 5))
 })
 
-app.post('/sendChanged', (req,res) => {
+app.post('/sendChanged', (req, res) => {
   let data = JSON.parse(req.headers.body).newText
   fs.writeFile(currentFile, data, (err) => {
     res.send(JSON.stringify('zapisano zmiany'))
   })
 })
 
-app.post('/newfilename', (req,res) => {
-  console.log(currentFile.substr(currentFile.lastIndexOf('/')+1, currentFile.length));
+app.post('/newfilename', (req, res) => {
+  console.log(currentFile.substr(currentFile.lastIndexOf('/') + 1, currentFile.length));
   console.log(req.body.name);
-  fs.rename(currentFile, currentFile.substr(0, currentFile.lastIndexOf('/')+1) +  req.body.name, (err) => {
+  fs.rename(currentFile, currentFile.substr(0, currentFile.lastIndexOf('/') + 1) + req.body.name, (err) => {
     if (err) throw err
     currentFile = currentPath + req.body.name
     fs.readFile(currentPath + req.body.name, (err, data) => {
@@ -305,10 +338,19 @@ app.post('/newfilename', (req,res) => {
       res.render('edytor.hbs', {
         path: currentPath + req.body.name,
         contents: data.toString('utf8'),
-        currentFile: currentFile.substr(currentFile.lastIndexOf('/')+1, currentFile.length)
+        currentFile: currentFile.substr(currentFile.lastIndexOf('/') + 1, currentFile.length)
       });
     });
-  }) 
+  })
+})
+
+app.get('/previewFile=:path', (req, res) => {
+  res.sendFile(__dirname + '/upload/' + req.params.path.replaceAll('~', '/'))
+})
+
+app.post('/getImage', (req, res) => {
+  let image = Image()
+  image.src = currentFile
 })
 
 app.listen(port, () => {

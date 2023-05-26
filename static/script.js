@@ -25,8 +25,14 @@ const saveChanges = document.getElementById('saveChanges')
 const fileNameDialog = document.getElementById('new-file-name')
 const renameFile = document.getElementById('renameFile')
 const cancelBtn3 = document.getElementById('cancel3')
+const ip = 'http://192.168.119.116'
+const mainImageDiv = document.getElementById('main-image-div')
 
-if (fontLessen){
+
+if (mainImageDiv) {
+
+}
+else if (fontLessen) {
   var fontSize = 14
   var styleIte = 0
   let val = 1
@@ -46,9 +52,9 @@ if (fontLessen){
   });
 
   changecolor.addEventListener('click', () => {
-    if(styleIte != 3) {
+    if (styleIte != 3) {
       styleIte++
-      styleSwitcher.classList.remove(`style${styleIte-1}`)
+      styleSwitcher.classList.remove(`style${styleIte - 1}`)
       styleSwitcher.classList.add(`style${styleIte}`)
     }
     else {
@@ -59,12 +65,12 @@ if (fontLessen){
     console.log(styleIte);
   })
 
-  saveChanges.addEventListener('click', async() => {
+  saveChanges.addEventListener('click', async () => {
     if (/[^\u0000-\u00ff]/g.test(textArea.value)) {//wykryj znaki spoza ISO
       alert('wykryto znaki spoza standardu ISO-8859-1!')
     }
     else {
-      const response = await fetch('http://192.168.10.112:4000/sendChanged', {
+      const response = await fetch(ip + ':4000/sendChanged', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -89,8 +95,8 @@ if (fontLessen){
 
   arrayFromRange = (start, stop) => {
     return Array.from(
-    { length: (stop - start) + 1 },
-    (value, index) => start + index
+      { length: (stop - start) + 1 },
+      (value, index) => start + index
     );
   }
 
@@ -104,16 +110,16 @@ if (fontLessen){
     }
     else if (key == 8) { //if backspace zlicz linijki
       val = textArea.value.split("\n").length
-      counterArr = String(arrayFromRange(1,val)).replaceAll(',','\n') + '\n'
+      counterArr = String(arrayFromRange(1, val)).replaceAll(',', '\n') + '\n'
       lineCounter.value = counterArr
       lineCounter.style.height = String(val * fontSize * 1.3) + 'px'
       textArea.style.height = String(val * fontSize * 1.3) + 'px'
       val++
     }
-}
+  }
 
-  saveSettings.addEventListener('click', async() => {
-    const response = await fetch('http://192.168.10.112:4000/sendSettings', {
+  saveSettings.addEventListener('click', async () => {
+    const response = await fetch(ip + ':4000/sendSettings', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -127,16 +133,16 @@ if (fontLessen){
     const res = await response.json()
     alert(res);
   })
-  
-  refreshAll = async() => {
-    const response = await fetch('http://192.168.10.112:4000/getSettings');
+
+  refreshAll = async () => {
+    const response = await fetch(ip + ':4000/getSettings');
     const json = await response.json();
     console.log(json);
     styleIte = json.color
     fontSize = json.size
-  
-    fontAdd.addEventListener('click', () => {fontSize++; updateFont()})
-    fontLessen.addEventListener('click', () => {fontSize--; updateFont()})
+
+    fontAdd.addEventListener('click', () => { fontSize++; updateFont() })
+    fontLessen.addEventListener('click', () => { fontSize--; updateFont() })
     styleSwitcher.classList.add(`style${styleIte}`)
     updateFont()
   }
@@ -168,7 +174,7 @@ else {
   function logdelete(event) {
     confirm('Jesteś pewny, że chcesz to usunąć?') ? event.submit() : null;
   }
-  if (nameFormBtn){
+  if (nameFormBtn) {
     nameFormBtn.addEventListener('click', () => {
       nameForm.showModal();
     });

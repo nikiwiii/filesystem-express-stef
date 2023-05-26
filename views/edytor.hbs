@@ -7,7 +7,9 @@
         </div>
         <button id="saveSettings">Zapisz ustawienia</button>
         <button id="renameFile">Zmiana nazwy</button>
-        <button id="addfile">Podgląd pliku</button>
+        <form action="/previewFile={{urlPath}}" method="get">
+            <button style="width: 100%;" id="addfile">Podgląd pliku</button>
+        </form>
     </div>
     <div class="right" style="padding: 0;">
         <div class="editor-top">
@@ -23,7 +25,8 @@
     <dialog id="new-file-name">
         <form action="/newfilename" method="post" id="new">
             <p>nowa nazwa pliku (pamiętaj o formacie):</p>
-            <input type="text" name="name" pattern='^[^<>:&#147\/\\|?*\x00-\x1F]+[^ .\\\/&#147]$' value="{{currentFile}}" required>
+            <input type="text" name="name" pattern='^[^<>:&#147\/\\|?*\x00-\x1F]+[^ .\\\/&#147]$'
+                value="{{currentFile}}" required>
             <div>
                 <button type="submit">OK</button>
                 <button id="cancel3" type="cancel">cancel</button>
