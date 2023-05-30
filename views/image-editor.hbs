@@ -1,16 +1,36 @@
 <div class="body">
     <div class="left">
-        <button id="moveSec">filters</button>
+        <button id="moveSec">Filtry</button>
         <div class="filters-display">
         {{#each effects}}
             <div>
                 <p style="color: white">{{name}}</p>
-                <img src="data:image/{{../format}};base64, {{../base64}}" style="width: 100px; filter:{{name}}(100%)">
+                <img src="data:image/{{../format}};base64, {{../base64}}" style="width: 100px; filter:{{name}}(100%)" class="lil-imgs">
             </div>
         {{/each}}
         </div>
     </div>
     <div class="right" style="padding: 0;">
         <p style="color: white">{{path}}</p>
-        <img src="data:image/{{format}};base64, {{base64}}">
+        <img src="data:image/{{format}};base64, {{base64}}" id="main-image-div">
+        <div class="small-btns" style="flex-direction: row">
+            <button>Zapisz</button>
+            <form action="/previewFile={{urlPath}}" method="get">
+                <button style="width: 100%;" id="addfile">Podgląd pliku</button>
+            </form>
+            <button id="renameFile">Zmień nazwę</button>
+        </div>
     </div>
+
+
+    <dialog id="new-file-name">
+        <form action="/newfilename" method="post" id="new">
+            <p>nowa nazwa pliku (pamiętaj o formacie):</p>
+            <input type="text" name="name" pattern='^[^<>:&#147\/\\|?*\x00-\x1F]+[^ .\\\/&#147]$'
+                value="{{currentFile}}" required>
+            <div>
+                <button type="submit">OK</button>
+                <button id="cancel3" type="cancel">cancel</button>
+            </div>
+        </form>
+    </dialog>
