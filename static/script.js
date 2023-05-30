@@ -18,105 +18,109 @@ const textArea = document.getElementById('text-contents');
 const lineCounter = document.getElementById('line-counter');
 const changecolor = document.getElementById('changecolor');
 const styleSwitcher = document.getElementById('style-switcher');
-const fontAdd = document.getElementById('add')
-const fontLessen = document.getElementById('less')
-const saveSettings = document.getElementById('saveSettings')
-const saveChanges = document.getElementById('saveChanges')
-const fileNameDialog = document.getElementById('new-file-name')
-const renameFile = document.getElementById('renameFile')
-const cancelBtn3 = document.getElementById('cancel3')
-const ip = 'http://192.168.119.116'
-const mainImageDiv = document.getElementById('main-image-div')
-
+const fontAdd = document.getElementById('add');
+const fontLessen = document.getElementById('less');
+const saveSettings = document.getElementById('saveSettings');
+const saveChanges = document.getElementById('saveChanges');
+const fileNameDialog = document.getElementById('new-file-name');
+const renameFile = document.getElementById('renameFile');
+const cancelBtn3 = document.getElementById('cancel3');
+const ip = 'http://192.168.119.116';
+const mainImageDiv = document.getElementById('main-image-div');
+const filterSection = document.querySelector('.filters-display');
+const moveSec = document.getElementById('moveSec');
 
 if (mainImageDiv) {
-
-}
-else if (fontLessen) {
-  var fontSize = 14
-  var styleIte = 0
-  let val = 1
+  move = () => {
+    filterSection.classList.includes('here')
+      ? filterSection.classList.remove('here')
+      : filterSection.classList.add('here');
+  };
+} else if (fontLessen) {
+  var fontSize = 14;
+  var styleIte = 0;
+  let val = 1;
 
   updateFont = () => {
-    lineCounter.style.fontSize = String(fontSize) + 'px'
-    lineCounter.style.height = String(val * fontSize * 1.3) + 'px'
-    lineCounter.style.width = String(fontSize * 2) + 'px'
-    textArea.style.fontSize = String(fontSize) + 'px'
-    textArea.style.height = String(val * fontSize * 1.3) + 'px'
-  }
+    lineCounter.style.fontSize = String(fontSize) + 'px';
+    lineCounter.style.height = String(val * fontSize * 1.3) + 'px';
+    lineCounter.style.width = String(fontSize * 2) + 'px';
+    textArea.style.fontSize = String(fontSize) + 'px';
+    textArea.style.height = String(val * fontSize * 1.3) + 'px';
+  };
 
-  let lines = textArea.value.split("\n");
-  lines.forEach(e => {
-    lineCounter.value += String(val) + '\n'
-    val++
+  let lines = textArea.value.split('\n');
+  lines.forEach((e) => {
+    lineCounter.value += String(val) + '\n';
+    val++;
   });
 
   changecolor.addEventListener('click', () => {
     if (styleIte != 3) {
-      styleIte++
-      styleSwitcher.classList.remove(`style${styleIte - 1}`)
-      styleSwitcher.classList.add(`style${styleIte}`)
-    }
-    else {
-      styleIte = 0
-      styleSwitcher.classList.remove(`style3`)
-      styleSwitcher.classList.add(`style${styleIte}`)
+      styleIte++;
+      styleSwitcher.classList.remove(`style${styleIte - 1}`);
+      styleSwitcher.classList.add(`style${styleIte}`);
+    } else {
+      styleIte = 0;
+      styleSwitcher.classList.remove(`style3`);
+      styleSwitcher.classList.add(`style${styleIte}`);
     }
     console.log(styleIte);
-  })
+  });
 
   saveChanges.addEventListener('click', async () => {
-    if (/[^\u0000-\u00ff]/g.test(textArea.value)) {//wykryj znaki spoza ISO
-      alert('wykryto znaki spoza standardu ISO-8859-1!')
-    }
-    else {
+    if (/[^\u0000-\u00ff]/g.test(textArea.value)) {
+      //wykryj znaki spoza ISO
+      alert('wykryto znaki spoza standardu ISO-8859-1!');
+    } else {
       const response = await fetch(ip + ':4000/sendChanged', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
           body: JSON.stringify({
-            newText: textArea.value
+            newText: textArea.value,
           }),
         },
       });
-      const res = await response.json()
+      const res = await response.json();
       alert(res);
     }
-  })
+  });
 
   renameFile.addEventListener('click', () => {
-    fileNameDialog.showModal()
-  })
+    fileNameDialog.showModal();
+  });
 
   cancelBtn3.addEventListener('click', () => {
-    fileNameDialog.close()
-  })
+    fileNameDialog.close();
+  });
 
   arrayFromRange = (start, stop) => {
     return Array.from(
-      { length: (stop - start) + 1 },
+      { length: stop - start + 1 },
       (value, index) => start + index
     );
-  }
+  };
 
   onTextareaInput = () => {
     var key = window.event.keyCode;
-    if (key == 13) { //if enter dodaj linijke
-      lineCounter.value += String(val) + '\n'
-      lineCounter.style.height = String(val * fontSize * 1.3) + 'px'
-      textArea.style.height = String(val * fontSize * 1.3) + 'px'
-      val++
+    if (key == 13) {
+      //if enter dodaj linijke
+      lineCounter.value += String(val) + '\n';
+      lineCounter.style.height = String(val * fontSize * 1.3) + 'px';
+      textArea.style.height = String(val * fontSize * 1.3) + 'px';
+      val++;
+    } else if (key == 8) {
+      //if backspace zlicz linijki
+      val = textArea.value.split('\n').length;
+      counterArr = String(arrayFromRange(1, val)).replaceAll(',', '\n') + '\n';
+      lineCounter.value = counterArr;
+      lineCounter.style.height = String(val * fontSize * 1.3) + 'px';
+      textArea.style.height = String(val * fontSize * 1.3) + 'px';
+      val++;
     }
-    else if (key == 8) { //if backspace zlicz linijki
-      val = textArea.value.split("\n").length
-      counterArr = String(arrayFromRange(1, val)).replaceAll(',', '\n') + '\n'
-      lineCounter.value = counterArr
-      lineCounter.style.height = String(val * fontSize * 1.3) + 'px'
-      textArea.style.height = String(val * fontSize * 1.3) + 'px'
-      val++
-    }
-  }
+  };
 
   saveSettings.addEventListener('click', async () => {
     const response = await fetch(ip + ':4000/sendSettings', {
@@ -130,25 +134,30 @@ else if (fontLessen) {
         }),
       },
     });
-    const res = await response.json()
+    const res = await response.json();
     alert(res);
-  })
+  });
 
   refreshAll = async () => {
     const response = await fetch(ip + ':4000/getSettings');
     const json = await response.json();
     console.log(json);
-    styleIte = json.color
-    fontSize = json.size
+    styleIte = json.color;
+    fontSize = json.size;
 
-    fontAdd.addEventListener('click', () => { fontSize++; updateFont() })
-    fontLessen.addEventListener('click', () => { fontSize--; updateFont() })
-    styleSwitcher.classList.add(`style${styleIte}`)
-    updateFont()
-  }
-  refreshAll()
-}
-else {
+    fontAdd.addEventListener('click', () => {
+      fontSize++;
+      updateFont();
+    });
+    fontLessen.addEventListener('click', () => {
+      fontSize--;
+      updateFont();
+    });
+    styleSwitcher.classList.add(`style${styleIte}`);
+    updateFont();
+  };
+  refreshAll();
+} else {
   actualForm.addEventListener('change', () => {
     fileChosen.textContent = actualForm.value;
   });
