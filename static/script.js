@@ -29,13 +29,27 @@ const ip = 'http://192.168.xx.xx';
 const mainImageDiv = document.getElementById('main-image-div');
 const filterSection = document.querySelector('.filters-display');
 const moveSec = document.getElementById('moveSec');
+const lilImgs = document.querySelectorAll('.lil-imgs');
 
 if (mainImageDiv) {
-  move = () => {
-    filterSection.classList.includes('here')
+  moveSec.addEventListener('click', () => {
+    filterSection.classList.contains('here')
       ? filterSection.classList.remove('here')
       : filterSection.classList.add('here');
-  };
+  });
+  for (var i = 0; i < lilImgs.length; i++) {
+    let filter = lilImgs[i].style.filter;
+    lilImgs[i].addEventListener('click', (e) => {
+      mainImageDiv.style.filter = filter;
+    });
+  }
+  renameFile.addEventListener('click', () => {
+    fileNameDialog.showModal();
+  });
+
+  cancelBtn3.addEventListener('click', () => {
+    fileNameDialog.close();
+  });
 } else if (fontLessen) {
   var fontSize = 14;
   var styleIte = 0;
