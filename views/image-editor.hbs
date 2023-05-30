@@ -1,9 +1,16 @@
 <div class="body">
     <div class="left">
         <button>filters</button>
+        <div>
+        {{#each effects}}
+            <div>
+                <p style="color: white">{{name}}</p>
+                <img src="data:image/{{../format}};base64, {{../base64}}" style="width: 100px; filter:{{name}}(100%)">
+            </div>
+        {{/each}}
+        </div>
     </div>
     <div class="right" style="padding: 0;">
         <p style="color: white">{{path}}</p>
-        <div id="main-image-div" style="background-image: url('{{path}}');"></div>
-        <img src="data:image/{{format}};base64, {{base64}}" style="width: 100px">
+        <img src="data:image/{{format}};base64, {{base64}}">
     </div>
