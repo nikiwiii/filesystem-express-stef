@@ -270,26 +270,42 @@ app.post('/newfoldername', (req, res) => {
   );
 });
 
+let isCurrFileImg = false;
+let baseUrl;
+let UrlPathIdk;
+
 app.get('/edit=:path', (req, res) => {
   // console.log(currentPath + req.params.path);
   // console.log(fs.existsSync(currentPath + req.params.path));
   let path = './upload/' + req.params.path.replaceAll('~', '/');
   currentFile = path;
-  const format = currentFile.substr(
+  let format = currentFile.substr(
     currentFile.lastIndexOf('.') + 1,
     currentFile.length
   );
   if (['png', 'jpg', 'svg'].includes(format)) {
-    let baseUrl = fs.readFileSync(currentFile, { encoding: 'base64' });
-    console.log(baseUrl.toString('base64').substr(0, 5));
+    UrlPathIdk = req.params.path;
+    isCurrFileImg = true;
+    baseUrl = fs.readFileSync(currentFile, { encoding: 'base64' });
     res.render('image-editor.hbs', {
+      currentFile: currentFile.substr(
+        currentFile.lastIndexOf('/') + 1,
+        currentFile.length
+      ),
+      urlPath: UrlPathIdk,
       base64: baseUrl,
       format: format,
       path: path,
-      effects: [{ name: 'grayscale' }, { name: 'invert' }, { name: 'sepia' }],
+      effects: [
+        { name: 'grayscale' },
+        { name: 'invert' },
+        { name: 'sepia' },
+        { name: 'none' },
+      ],
     });
   } else {
     fs.readFile(path, (err, data) => {
+      isCurrFileImg = false;
       if (err) throw err;
       if (data == '') {
         if (format == 'html') {
@@ -359,7 +375,7 @@ app.post('/newfilename', (req, res) => {
   console.log(
     currentFile.substr(currentFile.lastIndexOf('/') + 1, currentFile.length)
   );
-  console.log(req.body.name);
+  console.log(currentFile);
   fs.rename(
     currentFile,
     currentFile.substr(0, currentFile.lastIndexOf('/') + 1) + req.body.name,
@@ -368,14 +384,36 @@ app.post('/newfilename', (req, res) => {
       currentFile = currentPath + req.body.name;
       fs.readFile(currentPath + req.body.name, (err, data) => {
         if (err) throw err;
-        res.render('edytor.hbs', {
-          path: currentPath + req.body.name,
-          contents: data.toString('utf8'),
-          currentFile: currentFile.substr(
-            currentFile.lastIndexOf('/') + 1,
-            currentFile.length
-          ),
-        });
+        if (isCurrFileImg) {
+          res.render('image-editor.hbs', {
+            currentFile: currentFile.substr(
+              currentFile.lastIndexOf('/') + 1,
+              currentFile.length
+            ),
+            urlPath: UrlPathIdk,
+            base64: baseUrl,
+            format: currentFile.substr(
+              currentFile.lastIndexOf('.') + 1,
+              currentFile.length
+            ),
+            path: currentFile,
+            effects: [
+              { name: 'grayscale' },
+              { name: 'invert' },
+              { name: 'sepia' },
+              { name: 'none' },
+            ],
+          });
+        } else {
+          res.render('edytor.hbs', {
+            path: currentPath + req.body.name,
+            contents: data.toString('utf8'),
+            currentFile: currentFile.substr(
+              currentFile.lastIndexOf('/') + 1,
+              currentFile.length
+            ),
+          });
+        }
       });
     }
   );
