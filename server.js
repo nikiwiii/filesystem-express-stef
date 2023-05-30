@@ -281,15 +281,12 @@ app.get('/edit=:path', (req, res) => {
   );
   if (['png', 'jpg', 'svg'].includes(format)) {
     let baseUrl = fs.readFileSync(currentFile, { encoding: 'base64' });
-    console.log(String(baseUrl).substr(0, 5));
+    console.log(baseUrl.toString('base64').substr(0, 5));
     res.render('image-editor.hbs', {
-      urlPath: req.params.path,
       base64: baseUrl,
+      format: format,
       path: path,
-      currentFile: currentFile.substr(
-        currentFile.lastIndexOf('/') + 1,
-        currentFile.length
-      ),
+      effects: [{ name: 'grayscale' }, { name: 'invert' }, { name: 'sepia' }],
     });
   } else {
     fs.readFile(path, (err, data) => {
