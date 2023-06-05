@@ -30,8 +30,34 @@ const mainImageDiv = document.getElementById('main-image-div');
 const filterSection = document.querySelector('.filters-display');
 const moveSec = document.getElementById('moveSec');
 const lilImgs = document.querySelectorAll('.lil-imgs');
+const saveImgBtn = document.getElementById('saveImg');
 
 if (mainImageDiv) {
+  const image = mainImageDiv;
+  let dataUrl;
+  image.crossOrigin = 'anonymous';
+  image.onload = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.height = image.naturalHeight;
+    canvas.width = image.naturalWidth;
+    ctx.drawImage(image, 0, 0);
+    dataUrl = canvas.toDataURL();
+  };
+  saveImgBtn.addEventListener('click', async () => {
+    const response = await fetch(ip + ':4000/imageSaved', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        body: JSON.stringify({
+          newImg: dataUrl,
+        }),
+      },
+    });
+    const res = await response.json();
+    alert(res);
+  });
   moveSec.addEventListener('click', () => {
     filterSection.classList.contains('here')
       ? filterSection.classList.remove('here')
