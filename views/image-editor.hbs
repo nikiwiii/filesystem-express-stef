@@ -10,15 +10,17 @@
         {{/each}}
         </div>
     </div>
-    <div class="right" style="padding: 0;">
+    <div class="right" style="padding: 0">
         <p style="color: white">{{path}}</p>
-        <img src="data:image/{{format}};base64, {{base64}}" id="main-image-div">
+        <div class="img-container">
+            <img src="data:image/{{format}};base64, {{base64}}" id="main-image-div">
+        </div>
         <div class="small-btns" style="flex-direction: row">
             <button id='saveImg'>Zapisz</button>
-            <form action="/previewFile={{urlPath}}" method="get">
-                <button style="width: 100%;" id="addfile">Podgląd pliku</button>
+            <form action="/previewFile={{urlPath}}" method="get" class="addfile-container">
+                <button id="addfile">Podgląd pliku</button>
             </form>
-            <button id="renameFile">Zmień nazwę</button>
+            <button id="renameImg">Zmień nazwę</button>
         </div>
     </div>
 

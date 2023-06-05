@@ -5,7 +5,10 @@ const path = require('path');
 const app = express();
 const multer = require('multer');
 const port = 4000;
+const bodyParser = require('body-parser')
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 app.engine(
@@ -91,11 +94,7 @@ app.post('/newfolder', (req, res) => {
     fs.mkdir(currentPath + req.body.name, (err) => {
       if (err) throw err;
       console.log('stworzono ' + req.body.name);
-      res.render('index.hbs', {
-        files: segregate(),
-        pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 9 ? true : false,
-      });
+      res.redirect('/')
     });
   } else {
     fs.mkdir(
@@ -103,11 +102,7 @@ app.post('/newfolder', (req, res) => {
       (err) => {
         if (err) throw err;
         console.log('stworzono kopie ' + req.body.name);
-        res.render('index.hbs', {
-          files: segregate(),
-          pathArr: getPathArr(),
-          nonuploadfolder: currentPath.length !== 9 ? true : false,
-        });
+        res.redirect('/')
       }
     );
   }
@@ -122,11 +117,7 @@ app.post('/newfile', (req, res) => {
     fs.appendFile(currentPath + name, '', (err) => {
       if (err) throw err;
       console.log('stworzono ' + name);
-      res.render('index.hbs', {
-        files: segregate(),
-        pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 9 ? true : false,
-      });
+      res.redirect('/')
     });
   } else {
     fs.appendFile(
@@ -139,11 +130,7 @@ app.post('/newfile', (req, res) => {
       (err) => {
         if (err) throw err;
         console.log('stworzono kopie ' + name);
-        res.render('index.hbs', {
-          files: segregate(),
-          pathArr: getPathArr(),
-          nonuploadfolder: currentPath.length !== 9 ? true : false,
-        });
+        res.redirect('/')
       }
     );
   }
@@ -161,19 +148,11 @@ app.get('/folder&name=:name', (req, res) => {
       (err) => {
         if (err) throw err;
         console.log('usunieto ' + name);
-        res.render('index.hbs', {
-          files: segregate(),
-          pathArr: getPathArr(),
-          nonuploadfolder: currentPath.length !== 9 ? true : false,
-        });
+        res.redirect('/')
       }
     );
   } else {
-    res.render('index.hbs', {
-      files: segregate(),
-      pathArr: getPathArr(),
-      nonuploadfolder: currentPath.length !== 9 ? true : false,
-    });
+    res.redirect('/')
   }
 });
 app.get('/file&name=:name', (req, res) => {
@@ -182,18 +161,10 @@ app.get('/file&name=:name', (req, res) => {
     fs.unlink(currentPath + name, (err) => {
       if (err) throw err;
       console.log('usunieto ' + req.params.name);
-      res.render('index.hbs', {
-        files: segregate(),
-        pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 9 ? true : false,
-      });
+      res.redirect('/')
     });
   } else {
-    res.render('index.hbs', {
-      files: segregate(),
-      pathArr: getPathArr(),
-      nonuploadfolder: currentPath.length !== 9 ? true : false,
-    });
+    res.redirect('/')
   }
 });
 
@@ -217,11 +188,7 @@ app.post('/uploadf', type, function (req, res) {
   fs.readFile(temp_file, (err, data) => {
     fs.unlink(temp_file, (err) => {
       fs.appendFile(target_file, data, (err) => {
-        res.render('index.hbs', {
-          files: segregate(),
-          pathArr: getPathArr(),
-          nonuploadfolder: currentPath.length !== 9 ? true : false,
-        });
+        res.redirect('/')
       });
     });
   });
@@ -235,11 +202,7 @@ app.get('/name=:path', (req, res) => {
       : '/' + req.params.path.replaceAll('~', '/'));
   currentPath[currentPath.length - 1] !== '/' ? (currentPath += '/') : null;
   console.log(currentPath);
-  res.render('index.hbs', {
-    files: segregate(),
-    pathArr: getPathArr(),
-    nonuploadfolder: currentPath.length !== 9 ? true : false,
-  });
+  res.redirect('/')
 });
 
 app.post('/newfoldername', (req, res) => {
@@ -261,11 +224,7 @@ app.post('/newfoldername', (req, res) => {
         '/' +
         req.body.name +
         '/';
-      res.render('index.hbs', {
-        files: segregate(),
-        pathArr: getPathArr(),
-        nonuploadfolder: currentPath.length !== 9 ? true : false,
-      });
+      res.redirect('/')
     }
   );
 });
@@ -313,15 +272,15 @@ app.get('/edit=:path', (req, res) => {
         if (format == 'html') {
           var starterData = `<!DOCTYPE html>
           <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta http-equiv="X-UA-Compatible" content="IE=edge">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Document</title>
-          </head>
-          <body>
-              
-          </body>
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Document</title>
+            </head>
+            <body>
+                
+            </body>
           </html>`;
         } else if (format == 'js') {
           var starterData = 'let a = 0';
@@ -332,7 +291,7 @@ app.get('/edit=:path', (req, res) => {
       res.render('edytor.hbs', {
         urlPath: req.params.path,
         path: path,
-        contents: data !== '' ? data.toString('utf8') : starterData,
+        contents: data.length !== 0 ? data.toString('utf8') : starterData,
         currentFile: currentFile.substr(
           currentFile.lastIndexOf('/') + 1,
           currentFile.length
@@ -384,7 +343,7 @@ app.post('/newfilename', (req, res) => {
     (err) => {
       if (err) throw err;
       currentFile = currentPath + req.body.name;
-      fs.readFile(currentPath + req.body.name, (err, data) => {
+      fs.readFile(currentFile, (err, data) => {
         if (err) throw err;
         if (isCurrFileImg) {
           res.render('image-editor.hbs', {
@@ -392,7 +351,7 @@ app.post('/newfilename', (req, res) => {
               currentFile.lastIndexOf('/') + 1,
               currentFile.length
             ),
-            urlPath: UrlPathIdk,
+            urlPath: currentFile.replaceAll('/', '~').substr(9, currentFile.length),
             base64: baseUrl,
             format: formatImg,
             path: currentFile,
@@ -422,16 +381,11 @@ app.get('/previewFile=:path', (req, res) => {
   res.sendFile(__dirname + '/upload/' + req.params.path.replaceAll('~', '/'));
 });
 
-app.post('/getImage', (req, res) => {
-  let image = Image();
-  image.src = currentFile;
-});
-
 app.post('/imageSaved', (req, res) => {
-  const img64 = req.params.newImg;
-  console.log(img64.substr(0, 4));
-  fs.writeFile(currentFile, img64, 'base64', (err) => {
-    throw err;
+  const img64 = req.body.newImg.substr(22,req.body.newImg.length);
+  console.log(img64.substr(0,10));
+  fs.writeFile(currentFile, img64, {encoding: 'base64'}, (err) => {
+    console.log(err);;
   });
   res.send(JSON.stringify('zapisano obraz'));
 });

@@ -25,7 +25,7 @@ const saveChanges = document.getElementById('saveChanges');
 const fileNameDialog = document.getElementById('new-file-name');
 const renameFile = document.getElementById('renameFile');
 const cancelBtn3 = document.getElementById('cancel3');
-const ip = 'http://192.168.xx.xx';
+const ip = 'http://192.168.10.112';
 const mainImageDiv = document.getElementById('main-image-div');
 const filterSection = document.querySelector('.filters-display');
 const moveSec = document.getElementById('moveSec');
@@ -48,12 +48,12 @@ if (mainImageDiv) {
     const response = await fetch(ip + ':4000/imageSaved', {
       method: 'POST',
       headers: {
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
-        body: JSON.stringify({
-          newImg: dataUrl,
-        }),
       },
+      body: JSON.stringify({
+        newImg: dataUrl,
+      }),
     });
     const res = await response.json();
     alert(res);
@@ -67,9 +67,18 @@ if (mainImageDiv) {
     let filter = lilImgs[i].style.filter;
     lilImgs[i].addEventListener('click', (e) => {
       mainImageDiv.style.filter = filter;
+      const image = mainImageDiv;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.height = image.naturalHeight;
+      canvas.width = image.naturalWidth;
+      ctx.filter = filter
+      ctx.drawImage(image, 0, 0);
+      dataUrl = canvas.toDataURL();
+      console.log(dataUrl.substr(0,36));
     });
   }
-  renameFile.addEventListener('click', () => {
+  renameImg.addEventListener('click', () => {
     fileNameDialog.showModal();
   });
 
