@@ -14,7 +14,7 @@
         <p style="color: white">{{path}}</p>
         <img src="data:image/{{format}};base64, {{base64}}" id="main-image-div">
         <div class="small-btns" style="flex-direction: row">
-            <button>Zapisz</button>
+            <button id='saveImg'>Zapisz</button>
             <form action="/previewFile={{urlPath}}" method="get">
                 <button style="width: 100%;" id="addfile">Podgląd pliku</button>
             </form>
