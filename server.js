@@ -273,6 +273,7 @@ app.post('/newfoldername', (req, res) => {
 let isCurrFileImg = false;
 let baseUrl;
 let UrlPathIdk;
+let formatImg;
 
 app.get('/edit=:path', (req, res) => {
   // console.log(currentPath + req.params.path);
@@ -284,6 +285,7 @@ app.get('/edit=:path', (req, res) => {
     currentFile.length
   );
   if (['png', 'jpg', 'svg'].includes(format)) {
+    formatImg = format;
     UrlPathIdk = req.params.path;
     isCurrFileImg = true;
     baseUrl = fs.readFileSync(currentFile, { encoding: 'base64' });
@@ -294,8 +296,8 @@ app.get('/edit=:path', (req, res) => {
       ),
       urlPath: UrlPathIdk,
       base64: baseUrl,
-      format: format,
-      path: path,
+      format: formatImg,
+      path: currentFile,
       effects: [
         { name: 'grayscale' },
         { name: 'invert' },
@@ -392,10 +394,7 @@ app.post('/newfilename', (req, res) => {
             ),
             urlPath: UrlPathIdk,
             base64: baseUrl,
-            format: currentFile.substr(
-              currentFile.lastIndexOf('.') + 1,
-              currentFile.length
-            ),
+            format: formatImg,
             path: currentFile,
             effects: [
               { name: 'grayscale' },
@@ -426,6 +425,15 @@ app.get('/previewFile=:path', (req, res) => {
 app.post('/getImage', (req, res) => {
   let image = Image();
   image.src = currentFile;
+});
+
+app.post('/imageSaved', (req, res) => {
+  const img64 = req.params.newImg;
+  console.log(img64.substr(0, 4));
+  fs.writeFile(currentFile, img64, 'base64', (err) => {
+    throw err;
+  });
+  res.send(JSON.stringify('zapisano obraz'));
 });
 
 app.listen(port, () => {
