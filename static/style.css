@@ -339,3 +339,46 @@ textarea:not(:first-of-type) {
 #renameImg {
   margin-right: 20px;
 }
+.pojebiemnzaraz {
+  display: flex; 
+  flex-direction: row; 
+  justify-content: space-between; 
+  align-items: center;
+  margin: 5px;
+}
+.pochujtologowaniejest {
+  border: 1px solid white;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 0;
+  background-color: transparent;
+}
+.loginsroginkurwa {
+  display: flex; 
+  align-items: center; 
+  color: white; 
+  flex-direction: column;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 300px;
+  text-align: center;
+}
+.loginsroginkurwa p {
+  text-align: left;
+  width: 70px;
+}
+.loginsroginkurwa * {
+  width: 100%;
+}
+.loginsroginkurwa input {
+  width: -webkit-fill-available;
+  height: 26px;
+  border: 0;
+}
+.background-of-login {
+  height: calc(100vh - 100px);
+  width: 100%;
+  background: radial-gradient(circle, rgb(162 0 190) 0%, rgb(41 40 130) 57%, rgb(32 0 57) 100%);
+}

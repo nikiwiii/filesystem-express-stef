@@ -1,0 +1,17 @@
+<div class="background-of-login">
+    <form class="loginsroginkurwa" method="post" action="/registerOrLogin">
+        <h1>REJESTRUJ SIĘ</h1>
+        {{#if alertText}}
+            <p style="color: red">{{alertText}}</p>
+        {{/if}}
+        <div class="pojebiemnzaraz">
+            <p>nazwa: </p>
+            <input type="text" name="name" id="name" pattern='^[^<>:&#147\/\\|?*\x00-\x1F]+[^ .\\\/&#147]$' required>
+        </div>
+        <div class="pojebiemnzaraz">
+            <p>hasło: </p>
+            <input type="password" name="password" id="password">
+        </div>
+        <button class="pochujtologowaniejest">JEST GIT</button>
+    </form>
+</div>

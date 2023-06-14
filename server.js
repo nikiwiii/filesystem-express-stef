@@ -6,6 +6,7 @@ const app = express();
 const multer = require('multer');
 const port = 4000;
 const bodyParser = require('body-parser')
+const { MongoClient, ObjectId } = require('mongodb');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -20,6 +21,60 @@ app.engine(
 );
 let currentPath = './upload/';
 let currentFile = '';
+let logged = false
+let users = [{name: 'dygacz', password: '123'}]
+let alertText = ''
+
+// const connectToMongoDB = async() => {
+//   try {
+//     var MongoClient = require('mongodb').MongoClient;
+//     var url = "mongodb://localhost:27017/";
+//     MongoClient.connect(url, function(err, db) {
+//       if (err) throw err;
+//       var dbo = db.db("mydb");
+//       dbo.createCollection("customers", function(err, res) {
+//         if (err) throw err;
+//         console.log("Collection created!");
+//         db.close();
+//       });
+//     });
+//   } catch (error) {
+//       console.log(error.message)
+//   }    
+// }
+
+const checkIfUserExists = (name) => {
+  let found = false
+  users.forEach((e,i) => {
+    if(Object.values(e).indexOf(name) > -1){
+      found = true
+    }
+  });
+  return found
+}
+
+app.post('/registerOrLogin', async(req, res) => {
+  alertText = ''
+  if (!checkIfUserExists(req.body.name)){
+    users.push({name: req.body.name, password: req.body.password})
+    logged = true
+    alert('stworzono użytkownika')
+  }
+  else {
+    const matched = users.find(e => e.name === req.body.name)
+    console.log(matched);
+    if (matched.password == req.body.password) {
+      logged = true
+    }
+    else {
+      alertText = 'złe hasło'
+    }
+  }
+  console.log(users);
+  console.log(alertText);
+  res.redirect('/')
+})
+
 
 const segregate = () => {
   let folders = [];
@@ -75,11 +130,18 @@ const getPathArr = () => {
 };
 
 app.get('/', (req, res) => {
-  res.render('index.hbs', {
-    files: segregate(),
-    pathArr: getPathArr(),
-    nonuploadfolder: currentPath.length !== 9 ? true : false, //czy obecny folder jest inny niz /upload
-  });
+  if (!logged){
+    res.render('login.hbs', {
+      alertText: alertText
+    });
+  }
+  else {
+    res.render('index.hbs', {
+      files: segregate(),
+      pathArr: getPathArr(),
+      nonuploadfolder: currentPath.length !== 9 ? true : false, //czy obecny folder jest inny niz /upload
+    });
+  }
 });
 
 app.use(

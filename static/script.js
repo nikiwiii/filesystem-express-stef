@@ -1,38 +1,44 @@
-const dialog = document.querySelector('#new-element');
-const form = document.querySelector('#new');
-const btn1 = document.querySelector('#addfolder');
-const btn2 = document.querySelector('#addfile');
-const delfolders = document.querySelector('#folder');
-const delfiles = document.querySelector('#dfiles');
-const cancelBtn1 = document.querySelector('#cancel1');
-const cancelBtn2 = document.querySelector('#cancel2');
-const upload = document.querySelector('#upload');
-const uploadform = document.querySelector('#uploadform');
-const delfile = document.querySelector('#delfilebtn');
-const delfolder = document.querySelector('#delfolderbtn');
-const nameFormBtn = document.querySelector('#newnamebtn');
-const nameForm = document.querySelector('#new-element-name');
-const actualForm = document.getElementById('file-upload');
-const fileChosen = document.getElementById('file-chosen');
-const textArea = document.getElementById('text-contents');
-const lineCounter = document.getElementById('line-counter');
-const changecolor = document.getElementById('changecolor');
-const styleSwitcher = document.getElementById('style-switcher');
-const fontAdd = document.getElementById('add');
-const fontLessen = document.getElementById('less');
-const saveSettings = document.getElementById('saveSettings');
-const saveChanges = document.getElementById('saveChanges');
-const fileNameDialog = document.getElementById('new-file-name');
-const renameFile = document.getElementById('renameFile');
-const cancelBtn3 = document.getElementById('cancel3');
+const $ = document.querySelector.bind(document);
+const dialog = $('#new-element');
+const form = $('#new');
+const btn1 = $('#addfolder');
+const btn2 = $('#addfile');
+const delfolders = $('#folder');
+const delfiles = $('#dfiles');
+const cancelBtn1 = $('#cancel1');
+const cancelBtn2 = $('#cancel2');
+const upload = $('#upload');
+const uploadform = $('#uploadform');
+const delfile = $('#delfilebtn');
+const delfolder = $('#delfolderbtn');
+const nameFormBtn = $('#newnamebtn');
+const nameForm = $('#new-element-name');
+const actualForm = $('#file-upload');
+const fileChosen = $('#file-chosen');
+const textArea = $('#text-contents');
+const lineCounter = $('#line-counter');
+const changecolor = $('#changecolor');
+const styleSwitcher = $('#style-switcher');
+const fontAdd = $('#add');
+const fontLessen = $('#less');
+const saveSettings = $('#saveSettings');
+const saveChanges = $('#saveChanges');
+const fileNameDialog = $('#new-file-name');
+const renameFile = $('#renameFile');
+const cancelBtn3 = $('#cancel3');
 const ip = 'http://192.168.xx.xxx';
-const mainImageDiv = document.getElementById('main-image-div');
-const filterSection = document.querySelector('.filters-display');
-const moveSec = document.getElementById('moveSec');
+const mainImageDiv = $('#main-image-div');
+const filterSection = $('.filters-display');
+const moveSec = $('#moveSec');
 const lilImgs = document.querySelectorAll('.lil-imgs');
-const saveImgBtn = document.getElementById('saveImg');
+const saveImgBtn = $('#saveImg');
+const loginWindow = $('.background-of-login')
 
-if (mainImageDiv) {
+
+if (loginWindow) {
+
+}
+else if (mainImageDiv) {
   const image = mainImageDiv;
   let dataUrl;
   image.crossOrigin = 'anonymous';
@@ -212,7 +218,7 @@ if (mainImageDiv) {
   });
 
   upload.addEventListener('click', () => {
-    if (document.querySelector('#file-upload').value) {
+    if ($('#file-upload').value) {
       upload.type = 'submit';
       uploadform.submit();
     }
@@ -221,12 +227,12 @@ if (mainImageDiv) {
     dialog.close();
   });
   btn1.addEventListener('click', () => {
-    document.querySelector('#dialogtext').innerHTML = 'nazwa nowego folderu:';
+    $('#dialogtext').innerHTML = 'nazwa nowego folderu:';
     dialog.showModal();
   });
   btn2.addEventListener('click', () => {
     form.action = '/newfile';
-    document.querySelector('#dialogtext').innerHTML = 'nazwa nowego pliku:';
+    $('#dialogtext').innerHTML = 'nazwa nowego pliku:';
     dialog.showModal();
   });
   function logdelete(event) {
