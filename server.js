@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 const multer = require('multer');
 const port = 4000;
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const { MongoClient, ObjectId } = require('mongodb');
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,9 +21,9 @@ app.engine(
 );
 let currentPath = './upload/';
 let currentFile = '';
-let logged = false
-let users = [{name: 'dygacz', password: '123'}]
-let alertText = ''
+let logged = false;
+let users = [{ name: 'dygacz', password: '123' }];
+let alertText = '';
 
 // const connectToMongoDB = async() => {
 //   try {
@@ -40,41 +40,43 @@ let alertText = ''
 //     });
 //   } catch (error) {
 //       console.log(error.message)
-//   }    
+//   }
 // }
 
 const checkIfUserExists = (name) => {
-  let found = false
-  users.forEach((e,i) => {
-    if(Object.values(e).indexOf(name) > -1){
-      found = true
+  let found = false;
+  users.forEach((e, i) => {
+    if (Object.values(e).indexOf(name) > -1) {
+      found = true;
     }
   });
-  return found
-}
+  return found;
+};
 
-app.post('/registerOrLogin', async(req, res) => {
-  alertText = ''
-  if (!checkIfUserExists(req.body.name)){
-    users.push({name: req.body.name, password: req.body.password})
-    logged = true
-    alert('stworzono użytkownika')
-  }
-  else {
-    const matched = users.find(e => e.name === req.body.name)
+app.post('/registerOrLogin', async (req, res) => {
+  alertText = '';
+  if (!checkIfUserExists(req.body.name)) {
+    users.push({ name: req.body.name, password: req.body.password });
+    logged = true;
+    alert('stworzono użytkownika');
+  } else {
+    const matched = users.find((e) => e.name === req.body.name);
     console.log(matched);
     if (matched.password == req.body.password) {
-      logged = true
-    }
-    else {
-      alertText = 'złe hasło'
+      logged = true;
+    } else {
+      alertText = 'złe hasło';
     }
   }
   console.log(users);
   console.log(alertText);
-  res.redirect('/')
-})
+  res.redirect('/');
+});
 
+app.get('/notLogged', (req, res) => {
+  logged = false;
+  res.redirect('/');
+});
 
 const segregate = () => {
   let folders = [];
@@ -130,12 +132,11 @@ const getPathArr = () => {
 };
 
 app.get('/', (req, res) => {
-  if (!logged){
+  if (!logged) {
     res.render('login.hbs', {
-      alertText: alertText
+      alertText: alertText,
     });
-  }
-  else {
+  } else {
     res.render('index.hbs', {
       files: segregate(),
       pathArr: getPathArr(),
@@ -156,7 +157,7 @@ app.post('/newfolder', (req, res) => {
     fs.mkdir(currentPath + req.body.name, (err) => {
       if (err) throw err;
       console.log('stworzono ' + req.body.name);
-      res.redirect('/')
+      res.redirect('/');
     });
   } else {
     fs.mkdir(
@@ -164,7 +165,7 @@ app.post('/newfolder', (req, res) => {
       (err) => {
         if (err) throw err;
         console.log('stworzono kopie ' + req.body.name);
-        res.redirect('/')
+        res.redirect('/');
       }
     );
   }
@@ -179,7 +180,7 @@ app.post('/newfile', (req, res) => {
     fs.appendFile(currentPath + name, '', (err) => {
       if (err) throw err;
       console.log('stworzono ' + name);
-      res.redirect('/')
+      res.redirect('/');
     });
   } else {
     fs.appendFile(
@@ -192,7 +193,7 @@ app.post('/newfile', (req, res) => {
       (err) => {
         if (err) throw err;
         console.log('stworzono kopie ' + name);
-        res.redirect('/')
+        res.redirect('/');
       }
     );
   }
@@ -210,11 +211,11 @@ app.get('/folder&name=:name', (req, res) => {
       (err) => {
         if (err) throw err;
         console.log('usunieto ' + name);
-        res.redirect('/')
+        res.redirect('/');
       }
     );
   } else {
-    res.redirect('/')
+    res.redirect('/');
   }
 });
 app.get('/file&name=:name', (req, res) => {
@@ -223,10 +224,10 @@ app.get('/file&name=:name', (req, res) => {
     fs.unlink(currentPath + name, (err) => {
       if (err) throw err;
       console.log('usunieto ' + req.params.name);
-      res.redirect('/')
+      res.redirect('/');
     });
   } else {
-    res.redirect('/')
+    res.redirect('/');
   }
 });
 
@@ -250,7 +251,7 @@ app.post('/uploadf', type, function (req, res) {
   fs.readFile(temp_file, (err, data) => {
     fs.unlink(temp_file, (err) => {
       fs.appendFile(target_file, data, (err) => {
-        res.redirect('/')
+        res.redirect('/');
       });
     });
   });
@@ -264,7 +265,7 @@ app.get('/name=:path', (req, res) => {
       : '/' + req.params.path.replaceAll('~', '/'));
   currentPath[currentPath.length - 1] !== '/' ? (currentPath += '/') : null;
   console.log(currentPath);
-  res.redirect('/')
+  res.redirect('/');
 });
 
 app.post('/newfoldername', (req, res) => {
@@ -286,7 +287,7 @@ app.post('/newfoldername', (req, res) => {
         '/' +
         req.body.name +
         '/';
-      res.redirect('/')
+      res.redirect('/');
     }
   );
 });
@@ -413,7 +414,9 @@ app.post('/newfilename', (req, res) => {
               currentFile.lastIndexOf('/') + 1,
               currentFile.length
             ),
-            urlPath: currentFile.replaceAll('/', '~').substr(9, currentFile.length),
+            urlPath: currentFile
+              .replaceAll('/', '~')
+              .substr(9, currentFile.length),
             base64: baseUrl,
             format: formatImg,
             path: currentFile,
@@ -444,10 +447,10 @@ app.get('/previewFile=:path', (req, res) => {
 });
 
 app.post('/imageSaved', (req, res) => {
-  const img64 = req.body.newImg.substr(22,req.body.newImg.length);
-  console.log(img64.substr(0,10));
-  fs.writeFile(currentFile, img64, {encoding: 'base64'}, (err) => {
-    console.log(err);;
+  const img64 = req.body.newImg.substr(22, req.body.newImg.length);
+  console.log(img64.substr(0, 10));
+  fs.writeFile(currentFile, img64, { encoding: 'base64' }, (err) => {
+    console.log(err);
   });
   res.send(JSON.stringify('zapisano obraz'));
 });
