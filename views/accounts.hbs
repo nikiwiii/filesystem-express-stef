@@ -1,0 +1,18 @@
+<div class="accounts" style="width: 100%">
+    <div class="flex-row" style="color: grey;">
+        <p>nazwa</p>
+        <p>_id</p>
+        <p>opcje</p>
+    </div>
+{{#each accounts}}
+    <div class="flex-row">
+        <p>{{this.name}}</p>
+        <p>{{this._id}}</p>
+        {{#if ../admin}}
+        <a href="/deleteUser={{this._id}}">USUŃ</a>
+        {{else}}
+        <p style="font-size: 14px; text-align: center">nie masz admina</p>
+        {{/if}}
+    </div>
+{{/each}}
+</div>

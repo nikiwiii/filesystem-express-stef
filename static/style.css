@@ -361,7 +361,7 @@ textarea:not(:first-of-type) {
   color: white;
   flex-direction: column;
   position: absolute;
-  top: 40%;
+  top: 45%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
   width: 350px;
@@ -384,8 +384,39 @@ textarea:not(:first-of-type) {
   width: 100%;
   background: radial-gradient(
     circle,
-    rgb(162 0 190) 0%,
-    rgb(41 40 130) 57%,
-    rgb(32 0 57) 100%
+    rgba(255, 0, 140, .8) 0%,
+    rgba(104, 0, 104, .8) 60%,
+    rgba(44, 0, 75, .8) 100%
   );
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-self: center;
+}
+.flex-row:first-of-type * {
+  text-align: center;
+  background-color: rgba(255, 255, 255, .05);
+}
+.flex-row * {
+  padding: 10px;
+  width: calc(100vw / 5);
+  background-color: rgba(255, 255, 255, .1);
+  margin: 1px;
+}
+.flex-row a {
+  background-color: rgba(255, 0, 0, 0.1);
+  text-align: center;
+  color: rgb(201, 152, 152);
+  text-decoration: none;
+  width: calc(100vw / 8);
+}
+.flex-row *:nth-of-type(3) {
+  width: calc(100vw / 8);
+}
+.accounts {
+  display: flex;
+  flex-direction: column;
+  color: white;
 }

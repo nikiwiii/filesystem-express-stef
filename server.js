@@ -6,9 +6,12 @@ const app = express();
 const multer = require('multer');
 const port = 4000;
 const bodyParser = require('body-parser');
-const { MongoClient, ObjectId } = require('mongodb');
+const crypto = require('crypto')
+const Data = require('nedb')
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -22,27 +25,15 @@ app.engine(
 let currentPath = './upload/';
 let currentFile = '';
 let logged = false;
-let users = [{ name: 'dygacz', password: '123' }];
+let users = [];
+let usersFromDB = new Data({
+  filename: 'kolekcja.db',
+  autoload: true
+})
+
 let alertText = '';
 let currentUser = '';
 
-// const connectToMongoDB = async() => {
-//   try {
-//     var MongoClient = require('mongodb').MongoClient;
-//     var url = "mongodb://localhost:27017/";
-//     MongoClient.connect(url, function(err, db) {
-//       if (err) throw err;
-//       var dbo = db.db("mydb");
-//       dbo.createCollection("customers", function(err, res) {
-//         if (err) throw err;
-//         console.log("Collection created!");
-//         db.close();
-//       });
-//     });
-//   } catch (error) {
-//       console.log(error.message)
-//   }
-// }
 
 const checkIfUserExists = (name) => {
   let found = false;
@@ -54,34 +45,70 @@ const checkIfUserExists = (name) => {
   return found;
 };
 
+const sha256 = async (message) => {
+  //encode as UTF-8
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  console.log('zaszyfrowano');
+  return hashHex;
+}
+
 app.post('/registerOrLogin', async (req, res) => {
-  alertText = '';
-  if (!checkIfUserExists(req.body.name)) {
-    users.push({ name: req.body.name, password: req.body.password });
-    if (!fs.existsSync(currentPath + req.body.name)) {
+  usersFromDB.find({}, async (err, docs) => {
+    users = docs
+    alertText = '';
+    const currPassword = await sha256(req.body.password)
+    if (!checkIfUserExists(req.body.name)) {
+      users.push({
+        name: req.body.name,
+        password: currPassword
+      });
+      usersFromDB.insert(users[users.length - 1])
+      logged = true;
+      currentUser = req.body.name;
+      console.log('stworzono użytkownika');
+    } else {
+      const matched = users.find((e) => e.name === req.body.name);
+      console.log(matched);
+      if (matched.password == currPassword) {
+        currentUser = req.body.name;
+        logged = true;
+      } else {
+        alertText = 'złe hasło';
+      }
+    }
+    currentPath = './upload/' + req.body.name + '/';
+    if (!fs.existsSync('./upload/' + req.body.name)) {
       fs.mkdir('./upload/' + req.body.name, (err) => {
+        if (err) console.log(err);
         console.log('stworzono folder');
       });
     }
-    logged = true;
-    currentUser = req.body.name;
-    console.log('stworzono użytkownika');
-    currentPath = './upload/' + req.body.name;
-  } else {
-    const matched = users.find((e) => e.name === req.body.name);
-    console.log(matched);
-    if (matched.password == req.body.password) {
-      currentUser = req.body.name;
-      currentPath = './upload/' + req.body.name;
-      logged = true;
-    } else {
-      alertText = 'złe hasło';
-    }
-  }
-  console.log(users);
-  console.log(alertText);
-  res.redirect('/');
+    console.log(users);
+    console.log(alertText);
+    res.redirect('/');
+  });
 });
+
+app.get('/accounts', (req, res) => {
+  usersFromDB.find({}, async (err, docs) => {
+    res.render('accounts.hbs', {
+      accounts: docs,
+      admin: currentUser === 'admin' ? true : false
+    })
+  })
+})
+
+app.get('/deleteUser=:id', (req, res) => {
+  const id = req.params.id
+  usersFromDB.remove({
+      _id: id
+  }, (err) => {
+    res.redirect('/accounts')
+  })
+})
 
 app.get('/notLogged', (req, res) => {
   logged = false;
@@ -97,22 +124,18 @@ const segregate = () => {
       folders.push({
         name: e,
         type: true,
-        path:
-          currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e, //query zachowa path z '~' zamiast '/'
+        path: currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e, //query zachowa path z '~' zamiast '/'
       });
     } else {
       files.push({
         name: e.substr(0, e.lastIndexOf('.')),
         format: e.substr(e.lastIndexOf('.'), e.length),
         type: false,
-        html:
-          e.substr(e.lastIndexOf('.') + 1, e.length) === 'html' ? true : false,
-        css:
-          e.substr(e.lastIndexOf('.') + 1, e.length) === 'css' ? true : false,
+        html: e.substr(e.lastIndexOf('.') + 1, e.length) === 'html' ? true : false,
+        css: e.substr(e.lastIndexOf('.') + 1, e.length) === 'css' ? true : false,
         js: e.substr(e.lastIndexOf('.') + 1, e.length) === 'js' ? true : false,
         fullname: e,
-        path:
-          currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e,
+        path: currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e,
       });
     }
   });
@@ -195,10 +218,10 @@ app.post('/newfile', (req, res) => {
   } else {
     fs.appendFile(
       currentPath +
-        name.substr(0, name.lastIndexOf('.')) +
-        '_kopia_' +
-        new Date().valueOf() +
-        name.substr(name.lastIndexOf('.'), name.length),
+      name.substr(0, name.lastIndexOf('.')) +
+      '_kopia_' +
+      new Date().valueOf() +
+      name.substr(name.lastIndexOf('.'), name.length),
       '',
       (err) => {
         if (err) throw err;
@@ -213,8 +236,7 @@ app.get('/folder&name=:name', (req, res) => {
   const name = req.params.name;
   if (fs.existsSync(currentPath + name)) {
     fs.rm(
-      currentPath + name,
-      {
+      currentPath + name, {
         recursive: true,
         force: true,
       },
@@ -252,12 +274,12 @@ app.post('/uploadf', type, function (req, res) {
   let name = req.file.originalname;
   let target_file =
     currentPath +
-    (name.includes('.')
-      ? name.substr(0, name.lastIndexOf('.')) +
-        '_' +
-        req.file.filename.substr(0, 4) +
-        name.substr(name.lastIndexOf('.'), name.length)
-      : name + '_' + req.file.filename.substr(0, 4) + '.txt');
+    (name.includes('.') ?
+      name.substr(0, name.lastIndexOf('.')) +
+      '_' +
+      req.file.filename.substr(0, 4) +
+      name.substr(name.lastIndexOf('.'), name.length) :
+      name + '_' + req.file.filename.substr(0, 4) + '.txt');
   fs.readFile(temp_file, (err, data) => {
     fs.unlink(temp_file, (err) => {
       fs.appendFile(target_file, data, (err) => {
@@ -273,9 +295,9 @@ app.get('/name=:path', (req, res) => {
   } else {
     currentPath =
       './upload' +
-      (req.params.path[0] === '~'
-        ? req.params.path.replaceAll('~', '/')
-        : '/' + req.params.path.replaceAll('~', '/'));
+      (req.params.path[0] === '~' ?
+        req.params.path.replaceAll('~', '/') :
+        '/' + req.params.path.replaceAll('~', '/'));
     currentPath[currentPath.length - 1] !== '/' ? (currentPath += '/') : null;
     console.log(currentPath);
   }
@@ -289,8 +311,8 @@ app.post('/newfoldername', (req, res) => {
       0,
       currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')
     ) +
-      '/' +
-      req.body.name,
+    '/' +
+    req.body.name,
     (err) => {
       if (err) throw err;
       currentPath =
@@ -324,7 +346,9 @@ app.get('/edit=:path', (req, res) => {
     formatImg = format;
     UrlPathIdk = req.params.path;
     isCurrFileImg = true;
-    baseUrl = fs.readFileSync(currentFile, { encoding: 'base64' });
+    baseUrl = fs.readFileSync(currentFile, {
+      encoding: 'base64'
+    });
     res.render('image-editor.hbs', {
       currentFile: currentFile.substr(
         currentFile.lastIndexOf('/') + 1,
@@ -334,11 +358,18 @@ app.get('/edit=:path', (req, res) => {
       base64: baseUrl,
       format: formatImg,
       path: currentFile,
-      effects: [
-        { name: 'grayscale' },
-        { name: 'invert' },
-        { name: 'sepia' },
-        { name: 'none' },
+      effects: [{
+          name: 'grayscale'
+        },
+        {
+          name: 'invert'
+        },
+        {
+          name: 'sepia'
+        },
+        {
+          name: 'none'
+        },
       ],
     });
   } else {
@@ -391,8 +422,7 @@ app.post('/sendSettings', (req, res) => {
 
 app.get('/getSettings', (req, res) => {
   res.send(
-    JSON.stringify(
-      {
+    JSON.stringify({
         size: editorFontSize,
         color: editorColor,
       },
@@ -434,11 +464,18 @@ app.post('/newfilename', (req, res) => {
             base64: baseUrl,
             format: formatImg,
             path: currentFile,
-            effects: [
-              { name: 'grayscale' },
-              { name: 'invert' },
-              { name: 'sepia' },
-              { name: 'none' },
+            effects: [{
+                name: 'grayscale'
+              },
+              {
+                name: 'invert'
+              },
+              {
+                name: 'sepia'
+              },
+              {
+                name: 'none'
+              },
             ],
           });
         } else {
@@ -463,7 +500,9 @@ app.get('/previewFile=:path', (req, res) => {
 app.post('/imageSaved', (req, res) => {
   const img64 = req.body.newImg.substr(22, req.body.newImg.length);
   console.log(img64.substr(0, 10));
-  fs.writeFile(currentFile, img64, { encoding: 'base64' }, (err) => {
+  fs.writeFile(currentFile, img64, {
+    encoding: 'base64'
+  }, (err) => {
     console.log(err);
   });
   res.send(JSON.stringify('zapisano obraz'));

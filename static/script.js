@@ -33,9 +33,12 @@ const moveSec = $('#moveSec');
 const lilImgs = document.querySelectorAll('.lil-imgs');
 const saveImgBtn = $('#saveImg');
 const loginWindow = $('.background-of-login')
+const accounts = $('.accounts')
 
+if (accounts) {
 
-if (loginWindow) {
+}
+else if (loginWindow) {
 
 }
 else if (mainImageDiv) {
