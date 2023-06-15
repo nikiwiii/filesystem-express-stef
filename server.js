@@ -24,6 +24,7 @@ let currentFile = '';
 let logged = false;
 let users = [{ name: 'dygacz', password: '123' }];
 let alertText = '';
+let currentUser = '';
 
 // const connectToMongoDB = async() => {
 //   try {
@@ -57,12 +58,21 @@ app.post('/registerOrLogin', async (req, res) => {
   alertText = '';
   if (!checkIfUserExists(req.body.name)) {
     users.push({ name: req.body.name, password: req.body.password });
+    if (!fs.existsSync(currentPath + req.body.name)) {
+      fs.mkdir('./upload/' + req.body.name, (err) => {
+        console.log('stworzono folder');
+      });
+    }
     logged = true;
-    alert('stworzono użytkownika');
+    currentUser = req.body.name;
+    console.log('stworzono użytkownika');
+    currentPath = './upload/' + req.body.name;
   } else {
     const matched = users.find((e) => e.name === req.body.name);
     console.log(matched);
     if (matched.password == req.body.password) {
+      currentUser = req.body.name;
+      currentPath = './upload/' + req.body.name;
       logged = true;
     } else {
       alertText = 'złe hasło';
@@ -258,13 +268,17 @@ app.post('/uploadf', type, function (req, res) {
 });
 
 app.get('/name=:path', (req, res) => {
-  currentPath =
-    './upload' +
-    (req.params.path[0] === '~'
-      ? req.params.path.replaceAll('~', '/')
-      : '/' + req.params.path.replaceAll('~', '/'));
-  currentPath[currentPath.length - 1] !== '/' ? (currentPath += '/') : null;
-  console.log(currentPath);
+  if (currentUser != 'admin' && req.params.path == '~') {
+    currentPath = currentPath;
+  } else {
+    currentPath =
+      './upload' +
+      (req.params.path[0] === '~'
+        ? req.params.path.replaceAll('~', '/')
+        : '/' + req.params.path.replaceAll('~', '/'));
+    currentPath[currentPath.length - 1] !== '/' ? (currentPath += '/') : null;
+    console.log(currentPath);
+  }
   res.redirect('/');
 });
 
