@@ -26,7 +26,7 @@ const saveChanges = $('#saveChanges');
 const fileNameDialog = $('#new-file-name');
 const renameFile = $('#renameFile');
 const cancelBtn3 = $('#cancel3');
-const ip = 'http://192.168.xx.xxx';
+const ip = 'http://192.168.119.116';
 const mainImageDiv = $('#main-image-div');
 const filterSection = $('.filters-display');
 const moveSec = $('#moveSec');
@@ -84,7 +84,7 @@ else if (mainImageDiv) {
       ctx.filter = filter
       ctx.drawImage(image, 0, 0);
       dataUrl = canvas.toDataURL();
-      console.log(dataUrl.substr(0,36));
+      console.log(dataUrl.substr(0, 36));
     });
   }
   renameImg.addEventListener('click', () => {

@@ -8,7 +8,11 @@ const port = 4000;
 const bodyParser = require('body-parser');
 const crypto = require('crypto')
 const Data = require('nedb')
+const nocache = require("nocache");
+const cookieparser = require("cookie-parser");
 
+app.use(cookieparser())
+app.use(nocache())
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -22,9 +26,7 @@ app.engine(
     helpers: {},
   })
 );
-let currentPath = './upload/';
 let currentFile = '';
-let logged = false;
 let users = [];
 let usersFromDB = new Data({
   filename: 'kolekcja.db',
@@ -32,7 +34,6 @@ let usersFromDB = new Data({
 })
 
 let alertText = '';
-let currentUser = '';
 
 
 const checkIfUserExists = (name) => {
@@ -66,20 +67,21 @@ app.post('/registerOrLogin', async (req, res) => {
         password: currPassword
       });
       usersFromDB.insert(users[users.length - 1])
-      logged = true;
-      currentUser = req.body.name;
       console.log('stworzono użytkownika');
+      res.cookie("login", req.body.name, { httpOnly: true, maxAge: 120 * 1000 })
+      res.cookie("path", './upload/' + req.cookies.login + '/', { httpOnly: true, maxAge: 120 * 1000 })
+      res.cookie("logged", true, { httpOnly: true, maxAge: 120 * 1000 })
     } else {
       const matched = users.find((e) => e.name === req.body.name);
       console.log(matched);
       if (matched.password == currPassword) {
-        currentUser = req.body.name;
-        logged = true;
+        res.cookie("login", req.body.name, { httpOnly: true, maxAge: 120 * 1000 })
+        res.cookie("path", './upload/' + req.cookies.login + '/', { httpOnly: true, maxAge: 120 * 1000 })
+        res.cookie("logged", true, { httpOnly: true, maxAge: 120 * 1000 })
       } else {
         alertText = 'złe hasło';
       }
     }
-    currentPath = './upload/' + req.body.name + '/';
     if (!fs.existsSync('./upload/' + req.body.name)) {
       fs.mkdir('./upload/' + req.body.name, (err) => {
         if (err) console.log(err);
@@ -96,7 +98,7 @@ app.get('/accounts', (req, res) => {
   usersFromDB.find({}, async (err, docs) => {
     res.render('accounts.hbs', {
       accounts: docs,
-      admin: currentUser === 'admin' ? true : false
+      admin: req.cookies.login === 'admin' ? true : false
     })
   })
 })
@@ -104,27 +106,27 @@ app.get('/accounts', (req, res) => {
 app.get('/deleteUser=:id', (req, res) => {
   const id = req.params.id
   usersFromDB.remove({
-      _id: id
+    _id: id
   }, (err) => {
     res.redirect('/accounts')
   })
 })
 
 app.get('/notLogged', (req, res) => {
-  logged = false;
+  res.cookie("logged", "false", { httpOnly: true, maxAge: 120 * 1000 })
   res.redirect('/');
 });
 
-const segregate = () => {
+const segregate = (path) => {
   let folders = [];
   let files = [];
-  let tab = fs.readdirSync(currentPath);
+  let tab = fs.readdirSync(path);
   tab.forEach((e) => {
-    if (fs.lstatSync(currentPath + e).isDirectory()) {
+    if (fs.lstatSync(path + e).isDirectory()) {
       folders.push({
         name: e,
         type: true,
-        path: currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e, //query zachowa path z '~' zamiast '/'
+        path: path.substr(9, path.length).replaceAll('/', '~') + e, //query zachowa path z '~' zamiast '/'
       });
     } else {
       files.push({
@@ -135,16 +137,16 @@ const segregate = () => {
         css: e.substr(e.lastIndexOf('.') + 1, e.length) === 'css' ? true : false,
         js: e.substr(e.lastIndexOf('.') + 1, e.length) === 'js' ? true : false,
         fullname: e,
-        path: currentPath.substr(9, currentPath.length).replaceAll('/', '~') + e,
+        path: path.substr(9, path.length).replaceAll('/', '~') + e,
       });
     }
   });
   return [folders, files];
 };
 
-const getPathArr = () => {
+const getPathArr = (path) => {
   let pathobj = [];
-  patharr = currentPath.substr(2, currentPath.length).split('/');
+  let patharr = path.substr(2, path.length).split('/');
   temp = '';
   patharr.forEach((e, i) => {
     if (i != 0) {
@@ -165,15 +167,65 @@ const getPathArr = () => {
 };
 
 app.get('/', (req, res) => {
-  if (!logged) {
+  console.log(req.cookies);
+  if (req.cookies.logged != "false" && req.cookies.logged != "true") {
+    res.cookie("logged", "false", { httpOnly: true, maxAge: 120 * 1000 })
+  }
+  if (!Object.entries(req.cookies).includes('path')) {
+    res.cookie("path", './upload/', { httpOnly: true, maxAge: 120 * 1000 })
+  }
+  if (req.cookies.logged == "false") {
     res.render('login.hbs', {
       alertText: alertText,
     });
   } else {
+    res.cookie("path", './upload/' + req.cookies.login + '/', { httpOnly: true, maxAge: 120 * 1000 })
+    let folders = [];
+    let files = [];
+    let tab = fs.readdirSync(req.cookies.path);
+    tab.forEach((e) => {
+      if (fs.lstatSync(req.cookies.path + e).isDirectory()) {
+        folders.push({
+          name: e,
+          type: true,
+          path: req.cookies.path.substr(9, req.cookies.path.length).replaceAll('/', '~') + e, //query zachowa path z '~' zamiast '/'
+        });
+      } else {
+        files.push({
+          name: e.substr(0, e.lastIndexOf('.')),
+          format: e.substr(e.lastIndexOf('.'), e.length),
+          type: false,
+          html: e.substr(e.lastIndexOf('.') + 1, e.length) === 'html' ? true : false,
+          css: e.substr(e.lastIndexOf('.') + 1, e.length) === 'css' ? true : false,
+          js: e.substr(e.lastIndexOf('.') + 1, e.length) === 'js' ? true : false,
+          fullname: e,
+          path: req.cookies.path.substr(9, req.cookies.path.length).replaceAll('/', '~') + e,
+        });
+      }
+    });
+    let pathobj = [];
+    let patharr = req.cookies.path.substr(2, req.cookies.path.length).split('/');
+    temp = '';
+    patharr.forEach((e, i) => {
+      if (i != 0) {
+        temp += e + '~';
+      } else {
+        temp += '~';
+      }
+      pathobj.push({
+        path: temp,
+        name: e,
+      });
+    });
+    pathobj[pathobj.length - 1].path.substr(
+      0,
+      pathobj[pathobj.length - 1].path.length - 1
+    ); //usuniecie ostatniego '/'
     res.render('index.hbs', {
-      files: segregate(),
-      pathArr: getPathArr(),
-      nonuploadfolder: currentPath.length !== 9 ? true : false, //czy obecny folder jest inny niz /upload
+      // files: segregate(req.cookies.path),
+      files: [folders, files],
+      pathArr: pathobj,
+      nonuploadfolder: req.cookies.path.length !== 9 ? true : false, //czy obecny folder jest inny niz /upload
     });
   }
 });
@@ -186,15 +238,15 @@ app.use(
 app.use(express.static('static'));
 
 app.post('/newfolder', (req, res) => {
-  if (!fs.existsSync(currentPath + req.body.name)) {
-    fs.mkdir(currentPath + req.body.name, (err) => {
+  if (!fs.existsSync(req.cookies.path + req.body.name)) {
+    fs.mkdir(req.cookies.path + req.body.name, (err) => {
       if (err) throw err;
       console.log('stworzono ' + req.body.name);
       res.redirect('/');
     });
   } else {
     fs.mkdir(
-      currentPath + req.body.name + '_kopia_' + new Date().valueOf(),
+      req.cookies.path + req.body.name + '_kopia_' + new Date().valueOf(),
       (err) => {
         if (err) throw err;
         console.log('stworzono kopie ' + req.body.name);
@@ -209,15 +261,15 @@ app.post('/newfile', (req, res) => {
   if (!name.includes('.')) {
     name += '.txt';
   }
-  if (!fs.existsSync(currentPath + name)) {
-    fs.appendFile(currentPath + name, '', (err) => {
+  if (!fs.existsSync(req.cookies.path + name)) {
+    fs.appendFile(req.cookies.path + name, '', (err) => {
       if (err) throw err;
       console.log('stworzono ' + name);
       res.redirect('/');
     });
   } else {
     fs.appendFile(
-      currentPath +
+      req.cookies.path +
       name.substr(0, name.lastIndexOf('.')) +
       '_kopia_' +
       new Date().valueOf() +
@@ -234,12 +286,12 @@ app.post('/newfile', (req, res) => {
 
 app.get('/folder&name=:name', (req, res) => {
   const name = req.params.name;
-  if (fs.existsSync(currentPath + name)) {
+  if (fs.existsSync(req.cookies.path + name)) {
     fs.rm(
-      currentPath + name, {
-        recursive: true,
-        force: true,
-      },
+      req.cookies.path + name, {
+      recursive: true,
+      force: true,
+    },
       (err) => {
         if (err) throw err;
         console.log('usunieto ' + name);
@@ -252,8 +304,8 @@ app.get('/folder&name=:name', (req, res) => {
 });
 app.get('/file&name=:name', (req, res) => {
   const name = req.params.name;
-  if (fs.existsSync(currentPath + name)) {
-    fs.unlink(currentPath + name, (err) => {
+  if (fs.existsSync(req.cookies.path + name)) {
+    fs.unlink(req.cookies.path + name, (err) => {
       if (err) throw err;
       console.log('usunieto ' + req.params.name);
       res.redirect('/');
@@ -263,66 +315,69 @@ app.get('/file&name=:name', (req, res) => {
   }
 });
 
-let upload = multer({
-  dest: currentPath,
-});
-let type = upload.single('filefold');
+// const upload = (req) => {
+//   return multer({
+//     dest: req.cookies.path,
+//   });
+// }
+// let type = upload('ll').single('filefold');
 
-app.post('/uploadf', type, function (req, res) {
-  console.log(req.file);
-  let temp_file = req.file.path;
-  let name = req.file.originalname;
-  let target_file =
-    currentPath +
-    (name.includes('.') ?
-      name.substr(0, name.lastIndexOf('.')) +
-      '_' +
-      req.file.filename.substr(0, 4) +
-      name.substr(name.lastIndexOf('.'), name.length) :
-      name + '_' + req.file.filename.substr(0, 4) + '.txt');
-  fs.readFile(temp_file, (err, data) => {
-    fs.unlink(temp_file, (err) => {
-      fs.appendFile(target_file, data, (err) => {
-        res.redirect('/');
-      });
-    });
-  });
-});
+// app.post('/uploadf', type, function (req, res) {
+//   console.log(req.file);
+//   let temp_file = req.file.path;
+//   let name = req.file.originalname;
+//   let target_file =
+//     req.cookies.path +
+//     (name.includes('.') ?
+//       name.substr(0, name.lastIndexOf('.')) +
+//       '_' +
+//       req.file.filename.substr(0, 4) +
+//       name.substr(name.lastIndexOf('.'), name.length) :
+//       name + '_' + req.file.filename.substr(0, 4) + '.txt');
+//   fs.readFile(temp_file, (err, data) => {
+//     fs.unlink(temp_file, (err) => {
+//       fs.appendFile(target_file, data, (err) => {
+//         res.redirect('/');
+//       });
+//     });
+//   });
+// });
 
 app.get('/name=:path', (req, res) => {
-  if (currentUser != 'admin' && req.params.path == '~') {
-    currentPath = currentPath;
+  if (req.cookies.login != 'admin' && req.params.path == '~') {
   } else {
-    currentPath =
+    let currentFolder =
       './upload' +
       (req.params.path[0] === '~' ?
         req.params.path.replaceAll('~', '/') :
         '/' + req.params.path.replaceAll('~', '/'));
-    currentPath[currentPath.length - 1] !== '/' ? (currentPath += '/') : null;
-    console.log(currentPath);
+    req.cookies.path[req.cookies.path.length - 1] !== '/' ? (req.cookies.path += '/') : null;
+    res.cookie("path", currentFolder, { httpOnly: true, maxAge: 120 * 1000 })
+    console.log(currentFolder);
   }
   res.redirect('/');
 });
 
 app.post('/newfoldername', (req, res) => {
   fs.rename(
-    currentPath,
-    currentPath.substr(
+    req.cookies.path,
+    req.cookies.path.substr(
       0,
-      currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')
+      req.cookies.path.slice(0, req.cookies.path.length - 1).lastIndexOf('/')
     ) +
     '/' +
     req.body.name,
     (err) => {
       if (err) throw err;
-      currentPath =
-        currentPath.substr(
+      let currentFolder =
+        req.cookies.path.substr(
           0,
-          currentPath.slice(0, currentPath.length - 1).lastIndexOf('/')
+          req.cookies.path.slice(0, req.cookies.path.length - 1).lastIndexOf('/')
         ) +
         '/' +
         req.body.name +
         '/';
+      res.cookie("path", currentFolder, { httpOnly: true, maxAge: 120 * 1000 })
       res.redirect('/');
     }
   );
@@ -334,8 +389,8 @@ let UrlPathIdk;
 let formatImg;
 
 app.get('/edit=:path', (req, res) => {
-  // console.log(currentPath + req.params.path);
-  // console.log(fs.existsSync(currentPath + req.params.path));
+  // console.log(req.cookies.path + req.params.path);
+  // console.log(fs.existsSync(req.cookies.path + req.params.path));
   let path = './upload/' + req.params.path.replaceAll('~', '/');
   currentFile = path;
   let format = currentFile.substr(
@@ -359,17 +414,17 @@ app.get('/edit=:path', (req, res) => {
       format: formatImg,
       path: currentFile,
       effects: [{
-          name: 'grayscale'
-        },
-        {
-          name: 'invert'
-        },
-        {
-          name: 'sepia'
-        },
-        {
-          name: 'none'
-        },
+        name: 'grayscale'
+      },
+      {
+        name: 'invert'
+      },
+      {
+        name: 'sepia'
+      },
+      {
+        name: 'none'
+      },
       ],
     });
   } else {
@@ -423,9 +478,9 @@ app.post('/sendSettings', (req, res) => {
 app.get('/getSettings', (req, res) => {
   res.send(
     JSON.stringify({
-        size: editorFontSize,
-        color: editorColor,
-      },
+      size: editorFontSize,
+      color: editorColor,
+    },
       null,
       5
     )
@@ -449,7 +504,7 @@ app.post('/newfilename', (req, res) => {
     currentFile.substr(0, currentFile.lastIndexOf('/') + 1) + req.body.name,
     (err) => {
       if (err) throw err;
-      currentFile = currentPath + req.body.name;
+      currentFile = req.cookies.path + req.body.name;
       fs.readFile(currentFile, (err, data) => {
         if (err) throw err;
         if (isCurrFileImg) {
@@ -465,22 +520,22 @@ app.post('/newfilename', (req, res) => {
             format: formatImg,
             path: currentFile,
             effects: [{
-                name: 'grayscale'
-              },
-              {
-                name: 'invert'
-              },
-              {
-                name: 'sepia'
-              },
-              {
-                name: 'none'
-              },
+              name: 'grayscale'
+            },
+            {
+              name: 'invert'
+            },
+            {
+              name: 'sepia'
+            },
+            {
+              name: 'none'
+            },
             ],
           });
         } else {
           res.render('edytor.hbs', {
-            path: currentPath + req.body.name,
+            path: req.cookies.path + req.body.name,
             contents: data.toString('utf8'),
             currentFile: currentFile.substr(
               currentFile.lastIndexOf('/') + 1,
